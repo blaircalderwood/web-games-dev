@@ -136,7 +136,25 @@ function update() {
     moveSoldiers();
     moveTurrets();
 
+    for(var i = 0; i < player.turrets.length; i++){
+        game.physics.arcade.overlap(player.turrets[i].bullets, player.soldiers, collisionHandler, null, this);
+    }
 }
+
+
+function collisionHandler(bullet, soldier)
+{
+     bullet.kill();
+     //bullet.splice(i, 1);
+     soldier.kill();
+     //soldier.splice(i, 1);
+
+    player.funds += 20;
+    scoreText.text = "Funds: " + player.funds + " Cts";
+
+
+}
+
 
 function moveSoldiers(){
 
@@ -277,6 +295,9 @@ spawnPlayerOnObject = function (listener, pointer) {
 
     player.soldiers.push(newSoldier);
 
+    player.funds -= 50;
+    scoreText.text = "Funds: " + player.funds + " Cts";
+
 };
 
 function spawnTurretOnObject(listener, pointer){
@@ -286,6 +307,9 @@ function spawnTurretOnObject(listener, pointer){
     var newTurret = new Turret("blue", targetTile.x, targetTile.y);
 
     player.turrets.push(newTurret);
+
+    player.funds -= 300;
+    scoreText.text = "Funds: " + player.funds + " Cts";
 
 }
 

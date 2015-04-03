@@ -171,9 +171,6 @@ function update() {
         redTurret.fire(player2);
     }
 
-
-
-
     player.body.velocity.x = 0;
     player.body.velocity.y = 0;
 
