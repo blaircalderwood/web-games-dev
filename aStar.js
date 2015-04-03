@@ -15,8 +15,8 @@ findPath = function (pathStart, pathEnd) {
 
     var maxWalkableTileNo = 0;
 
-    var worldWidth = gridCoords[0].length;
-    var worldHeight = gridCoords.length;
+    var worldWidth = gridCoords.length;
+    var worldHeight = gridCoords[0].length;
     var worldSize = worldWidth * worldHeight;
 
     function euclideanDistance(point, target) {
