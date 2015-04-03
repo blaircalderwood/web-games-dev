@@ -16,11 +16,16 @@ function preload() {
     game.load.image('redBullet', 'assets/redBullet.png');
 }
 
-var land, cursors, player, player2;//shadow explosions
+var land, cursors;//, player, player2;//shadow explosions
 var fireRate = 1000;
 
 var blueTurret;
 var redTurret;
+var player;
+var player2;
+var funds = 1000;
+var scoreText;
+var interval;
 
 
 
@@ -83,6 +88,30 @@ var BulletPool = function (team) {
     return bullets;
 }
 
+/*
+var EnemiesPool = function(team, x, y)
+{
+
+     var enemies = game.add.group();
+     enemies.enableBody = true;
+     enemies.physicsBodyType = Phaser.Physics.ARCADE;
+
+    if (team == "blue"){
+        enemies.createMultiple(30, 'player', 0, false);
+    } else {
+        enemies.createMultiple(30, 'player2', 0, false);
+    }
+
+    enemies.setAll('anchor.x', 0.5);
+    enemies.setAll('anchor.y', 0.5);
+    enemies.setAll('outOfBoundsKill', true);
+    enemies.setAll('checkWorldBounds', true);
+
+    return enemies;
+}
+  */
+
+
 
 function create() {
 
@@ -95,7 +124,9 @@ function create() {
     blueTurret = new Turret("blue", 100, 150);
     redTurret = new Turret("red", 200, 300);
 
-
+    var style = {font: "40px Arial", fill: "#19cb65", align: "center"};
+    scoreText = game.add.text(game.world.centerX, game.world.centerY/8, "Funds: " + funds + " Cts", style);
+    scoreText.anchor.set(0.5);
 
     /*
      //  Explosion pool
@@ -112,6 +143,7 @@ function create() {
 
     blueTurret.sprite.bringToTop();
     redTurret.sprite.bringToTop();
+
     player.bringToTop();
     player2.bringToTop();
 
@@ -119,6 +151,13 @@ function create() {
     cursors = game.input.keyboard.createCursorKeys();
 
 }
+
+     setInterval(function()
+     {
+      funds += 100;
+      scoreText.text = "Funds: " + funds + " Cts";
+     },3000);
+
 
 function update() {
 
@@ -132,12 +171,17 @@ function update() {
         redTurret.fire(player2);
     }
 
+
+
+
     player.body.velocity.x = 0;
     player.body.velocity.y = 0;
 
     checkKeys();
 
 }
+
+
 
 function addPlayer() {
 
