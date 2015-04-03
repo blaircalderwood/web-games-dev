@@ -1,6 +1,6 @@
 var game = new Phaser.Game(1100, 500, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
-var tiles, player, tileWidth, tileHeight, path, pointer = 0;
+var tiles, player = {}, tileWidth, tileHeight;
 
 var playerSpawnTimer = 0;
 
@@ -36,31 +36,51 @@ function preload() {
 
 function create() {
 
+    player.soldiers = [];
+
     tiles = game.add.group();
 
     createMap();
-
-    spawnPlayer();
 
 }
 
 function update() {
 
-    if (path) {
+    moveSoldiers();
 
-        var pathX = path[pointer][0] * tileWidth + (tileWidth / 2);
-        var pathY = path[pointer][1] * tileHeight + (tileHeight / 2);
+}
 
-        console.log("PATH: " + pathX, pathY);
-        console.log(player.x, player.y);
+function moveSoldiers(){
 
-        game.physics.arcade.moveToXY(player, pathX, pathY, 50);
+    for (var i = 0; i < player.soldiers.length; i++) {
 
-    }
+        if (player.soldiers[i].path.length > 0) {
+            var path = player.soldiers[i].path;
 
-    if(Math.round(player.x) == pathX && Math.round(player.y) == pathY){
-        console.log(pointer);
-        pointer ++;
+            var pathX = path[player.soldiers[i].pointer][0] * tileWidth + (tileWidth / 2);
+            var pathY = path[player.soldiers[i].pointer][1] * tileHeight + (tileHeight / 2);
+
+            player.soldiers[i].rotation = game.physics.arcade.moveToXY(player.soldiers[i], pathX, pathY, 50);
+
+
+            if (Math.round(player.soldiers[i].x) == pathX && Math.round(player.soldiers[i].y) == pathY) {
+
+                if (path[player.soldiers[i].pointer + 2]) {
+                    if (path[player.soldiers[i].pointer][0] !== path[player.soldiers[i].pointer + 2][0] && path[player.soldiers[i].pointer][1] !== path[player.soldiers[i].pointer + 2][1]) {
+                        player.soldiers[i].pointer++;
+                    }
+                }
+
+                player.soldiers[i].pointer++;
+
+            }
+
+            if(player.soldiers[i].pointer > path.length - 1){
+                player.soldiers[i].kill();
+                player.soldiers.splice(i, 1);
+            }
+
+        }
 
     }
 
@@ -68,7 +88,7 @@ function update() {
 
 function createMap() {
 
-    var tileName;
+    var tileName, inputEnabled;
     tileWidth = game.width / gridCoords.length;
     tileHeight = game.height / gridCoords[0].length;
 
@@ -86,6 +106,7 @@ function createMap() {
 
                 case 0:
                     tileName = "canWalkTile";
+                    inputEnabled = true;
                     break;
                 case 1:
                     tileName = "noWalkTile";
@@ -111,18 +132,30 @@ function createMap() {
             var newTile = game.add.sprite(tileWidth * i, tileHeight * j, tileName);
             newTile.width = tileWidth;
             newTile.height = tileHeight;
+
+            if (inputEnabled) {
+                newTile.inputEnabled = inputEnabled;
+                newTile.events.onInputDown.add(spawnPlayerOnObject, this);
+            }
         }
     }
 
 }
 
-function spawnPlayer() {
+spawnPlayerOnObject = function (listener, pointer) {
 
-    player = game.add.sprite((game.width / 2), Math.random() * game.height, 'player');
-    game.physics.arcade.enable(player);
-    player.bringToTop();
+    var objWidth = Math.floor(pointer.x / tileWidth) * tileWidth + (tileWidth / 2);
+    var objHeight = Math.floor(pointer.y / tileHeight) * tileHeight + (tileHeight / 2);
 
-    path = findPath([Math.floor(player.x / tileWidth), Math.floor(player.y / tileHeight)], [0, 0]);
-    console.log(path);
+    var newSoldier = game.add.sprite(objWidth, objHeight, 'player');
+    game.physics.arcade.enable(newSoldier);
+    newSoldier.bringToTop();
+    newSoldier.anchor.setTo(0.5, 0.5);
 
-}
+    newSoldier.path = findPath([Math.floor(newSoldier.x / tileWidth), Math.floor(newSoldier.y / tileHeight)], [0, 0]);
+
+    newSoldier.pointer = 0;
+
+    player.soldiers.push(newSoldier);
+
+};
