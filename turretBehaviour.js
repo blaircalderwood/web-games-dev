@@ -64,7 +64,7 @@ Turret.prototype.fire = function (target) {
         bullet.rotation = game.physics.arcade.moveToObject(bullet, target, 500);
 
     }
-}
+};
 
 
 var BulletPool = function (team) {
@@ -86,7 +86,7 @@ var BulletPool = function (team) {
     bullets.setAll('checkWorldBounds', true);
 
     return bullets;
-}
+};
 
 /*
 var EnemiesPool = function(team, x, y)
