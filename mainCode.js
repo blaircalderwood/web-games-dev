@@ -1,6 +1,6 @@
 var game = new Phaser.Game(1100, 500, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
-var tiles, player = {}, tileWidth, tileHeight, blueTurret, redTurret, currentPlayer;
+var tiles, player = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer;
 
 var playerSpawnTimer = 0;
 
@@ -25,6 +25,14 @@ var tileImages = [
     {key: "noWalkTile", src: "assets/noWalkTile.png"},
     {key: "neutralTile", src: "assets/neutralTile.jpg"}
 ];
+
+var Player = function(){
+
+    this.soldiers = [];
+    this.turrets = [];
+    this.funds = 1000;
+
+};
 
 var Turret = function (team, x, y) {
 
@@ -105,14 +113,21 @@ function preload() {
 
 function create() {
 
-    player.soldiers = [];
-    player.turrets = [];
+    player = new Player();
 
     tiles = game.add.group();
 
     createMap();
 
-    //blueTurret = new Turret("blue", 300, 300);
+    var style = {font: "30px Arial", fill: "#FFFFFF", align: "center"};
+    scoreText = game.add.text(game.world.centerX, game.world.centerY/8, "Funds: " + player.funds + " Cts", style);
+    scoreText.anchor.set(0.5);
+
+    scoreTimer = setInterval(function()
+    {
+        player.funds += 100;
+        scoreText.text = "Funds: " + player.funds + " Cts";
+    },3000);
 
 }
 

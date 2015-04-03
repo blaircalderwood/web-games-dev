@@ -48,7 +48,7 @@ var Turret = function (team, x, y) {
 
     return this;
 
-}
+};
 
 
 Turret.prototype.fire = function (target) {
