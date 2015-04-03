@@ -1,17 +1,14 @@
 var canvas, context;
 
-var gridCoords = [[0, 0, 0, 0, 0], [1, 0, 1, 0, 1], [0, 0, 0, 0, 0], [0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0], [0, 0, 0, 0, 0], [1, 0, 1, 0, 1], [0, 0, 0, 0, 0]];
-
 var currentPath = [];
 
 window.onload = function(){
 
-    currentPath = findPath(gridCoords, [0, 0], [3, 0]);
+    currentPath = findPath([0, 0], [4, 0]);
 
 };
 
-findPath = function (map, pathStart, pathEnd) {
+findPath = function (pathStart, pathEnd) {
 
     var pow = Math.pow;
     var sqrt = Math.sqrt;
@@ -60,9 +57,9 @@ findPath = function (map, pathStart, pathEnd) {
 
     function canWalkHere(x, y) {
 
-        return ((map[x] != null) &&
-            (map[x][y] != null) &&
-            (map[x][y] <= maxWalkableTileNo));
+        return ((gridCoords[x] != null) &&
+            (gridCoords[x][y] != null) &&
+            (gridCoords[x][y] <= maxWalkableTileNo));
 
     }
 
