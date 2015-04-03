@@ -110,19 +110,23 @@ function createMap() {
                     break;
                 case 1:
                     tileName = "noWalkTile";
+                    inputEnabled = false;
                     break;
                 case 2:
                     tileName = "neutralTile";
+                    inputEnabled = false;
                     //Change to 0 for simpler path finding
                     gridCoords[i][j] = 0;
                     break;
                 case 3:
                     tileName = "blueTile";
+                    inputEnabled = false;
                     //Change to 0 for simpler path finding
                     gridCoords[i][j] = 0;
                     break;
                 case 4:
                     tileName = "redTile";
+                    inputEnabled = false;
                     //Change to 0 for simpler path finding
                     gridCoords[i][j] = 0;
                     break;
@@ -132,11 +136,10 @@ function createMap() {
             var newTile = game.add.sprite(tileWidth * i, tileHeight * j, tileName);
             newTile.width = tileWidth;
             newTile.height = tileHeight;
+            newTile.inputEnabled = inputEnabled;
 
-            if (inputEnabled) {
-                newTile.inputEnabled = inputEnabled;
-                newTile.events.onInputDown.add(spawnPlayerOnObject, this);
-            }
+            if (inputEnabled == true) newTile.events.onInputDown.add(spawnPlayerOnObject, this);
+
         }
     }
 
