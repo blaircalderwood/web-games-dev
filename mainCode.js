@@ -1,6 +1,6 @@
 var game = new Phaser.Game(1100, 500, Phaser.AUTO, '', {preload: preload, create: create, update: update});
 
-var tiles, player = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, soldierGroup;
+var tiles, player = {}, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, soldierGroup;
 
 var playerSpawnTimer = 0;
 
@@ -47,15 +47,9 @@ function create() {
     createMap();
 
     player = new Player();
+    enemy = new Player();
 
-    var style = {font: "30px Arial", fill: "#FFFFFF", align: "center"};
-    scoreText = game.add.text(game.world.centerX, game.world.centerY / 8, "Funds: " + player.funds + " Cts", style);
-    scoreText.anchor.set(0.5);
-
-    scoreTimer = setInterval(function () {
-        player.funds += 100;
-        scoreText.text = "Funds: " + player.funds + " Cts";
-    }, 3000);
+    createText();
 
 }
 
@@ -70,9 +64,9 @@ function update() {
 
     });
 
-    player.soldierPool.forEach(function(soldier){
+    player.soldierPool.forEach(function (soldier) {
 
-      soldier.bringToTop();
+        soldier.bringToTop();
     });
 
 }
@@ -87,7 +81,7 @@ function collisionHandler(bullet, soldier) {
     soldier.kill();
 
     player.funds += 20;
-    scoreText.text = "Funds: " + player.funds + " Cts";
+    scoreText.text = "Funds: " + player.funds;
 
 
 }
@@ -121,7 +115,7 @@ function moveSoldiers() {
                 }
 
                 if (soldier.pointer > path.length - 1) {
-                    soldier.kill();
+                    goalReached(soldier);
                 }
 
             }
@@ -129,6 +123,20 @@ function moveSoldiers() {
         }
 
     });
+
+}
+
+function goalReached(soldier) {
+
+    soldier.kill();
+    enemy.health -= 10;
+    updateEnemyHealth();
+
+}
+
+function updateEnemyHealth(){
+
+    //enemy.healthText.text = "Enemy health: " + enemy.health;
 
 }
 
@@ -180,7 +188,7 @@ function createMap() {
                 case 0:
                     tileName = "canWalkTile";
                     inputEnabled = true;
-                    listenerFunction = spawnPlayerOnObject;
+                    listenerFunction = newSoldier;
                     break;
 
                 case 1:
@@ -224,23 +232,68 @@ function createMap() {
 
 }
 
-spawnPlayerOnObject = function (listener, pointer) {
+function createText(){
+
+    var style = {font: "30px Arial", fill: "#FFFFFF", align: "center"};
+    scoreText = game.add.text(game.world.centerX, game.world.centerY / 8, "Funds: " + player.funds + " Cts", style);
+    scoreText.anchor.set(0.5);
+
+    //enemy.healthText = game.add.text(game.world.width / 3, game.world.height / 2, "Enemy Health: " + enemy.health, style);
+
+    scoreTimer = setInterval(function () {
+        player.funds += 100;
+        scoreText.text = "Funds: " + player.funds + " Cts";
+    }, 3000);
+
+}
+
+function newSoldier(listener, pointer){
 
     var targetTile = getTargetTile(pointer);
 
-    var newSoldier = new Soldier(targetTile.x, targetTile.y, "blue");
+    $.ajax({
+        type: "GET",
+        url: "https://webgamesdev-blaircalderwood.c9.io/soldier?x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y),
+        async: "true",
+        contentType: "application/json",
+        dataType: 'jsonp',
+        success: spawnPlayerOnObject
+    });
 
-    //var newSoldier = game.add.sprite(targetTile.x, targetTile.y, 'player');
+}
+
+function newTurret(listener, pointer){
+
+    var targetTile = getTargetTile(pointer);
+
+    $.ajax({
+        type: "GET",
+        url: "https://webgamesdev-blaircalderwood.c9.io/soldier?x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y),
+        async: "true",
+        contentType: "application/json",
+        dataType: 'jsonp',
+        success: spawnTurretOnObject
+    });
+
+}
+
+function spawnPlayerOnObject (coordsArray) {
+
+    coordsArray = JSON.parse(coordsArray);
+
+    console.log(coordsArray);
+
+    var newSoldier = new Soldier(coordsArray[0], coordsArray[1], "blue");
 
     newSoldier.bringToTop();
 
     player.funds -= 50;
     scoreText.text = "Funds: " + player.funds + " Cts";
 
-};
+}
 
 
-function spawnTurretOnObject(listener, pointer) {
+function spawnTurretOnObject(pointer) {
 
     var targetTile = getTargetTile(pointer);
 

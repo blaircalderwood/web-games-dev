@@ -4,6 +4,7 @@ var Player = function () {
 
     this.turrets = new TurretPool("blue");
     this.funds = 1000;
+    this.health = 100;
 
 };
 
@@ -39,7 +40,7 @@ var Turret = function (team, x, y) {
     newTurret.bullets = new BulletPool(team);
 
     newTurret.fireRate = 1000;
-    newTurret.speed = 0.001;
+    newTurret.speed = 0.005;
 
     newTurret.anchor.setTo(0.3, 0.5);
 
