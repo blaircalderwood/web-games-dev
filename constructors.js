@@ -39,6 +39,7 @@ var Turret = function (team, x, y) {
     newTurret.bullets = new BulletPool(team);
 
     newTurret.fireRate = 1000;
+    newTurret.speed = 0.001;
 
     newTurret.anchor.setTo(0.3, 0.5);
 
@@ -87,8 +88,8 @@ rotate = function(turret, target){
 
     var totalRotation = game.physics.arcade.angleBetween(turret, target) - turret.rotation;
 
-    if(totalRotation <= - 0.01)turret.rotation -= 0.01;
-    else if(totalRotation >= 0.01)turret.rotation += 0.01;
+    if(totalRotation <= - turret.speed)turret.rotation -= turret.speed;
+    else if(totalRotation >= turret.speed)turret.rotation += turret.speed;
 
     fireBullet(turret, target, turret.rotation);
 
