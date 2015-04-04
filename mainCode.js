@@ -1,6 +1,6 @@
 var game = new Phaser.Game(1100, 500, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
-var tiles, player = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer;
+var tiles, player = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, soldierGroup;
 
 var playerSpawnTimer = 0;
 
@@ -28,9 +28,29 @@ var tileImages = [
 
 var Player = function(){
 
-    this.soldiers = [];
+    this.soldierGroup = game.add.group();
+    this.soldierGroup.enableBody = true;
     this.turrets = [];
     this.funds = 1000;
+    this.soldiers = this.soldierGroup.children;
+    this.soldierGroup.visible = true;
+
+};
+
+var Soldier = function(x, y, team){
+
+    var newSoldier = player.soldierGroup.create(x, y, 'player');
+
+    //player.soldierGroup.children[player.soldierGroup.children.length - 1];
+
+    newSoldier.bringToTop();
+    newSoldier.anchor.setTo(0.5, 0.5);
+
+    newSoldier.path = findPath([Math.floor(newSoldier.x / tileWidth), Math.floor(newSoldier.y / tileHeight)], [0, 0]);
+
+    newSoldier.pointer = 0;
+
+    return newSoldier;
 
 };
 
@@ -144,7 +164,11 @@ function update() {
 
 function collisionHandler(bullet, soldier)
 {
+
+    console.log(soldier);
+    console.log(player.soldiers.indexOf(soldier));
      bullet.kill();
+
      //bullet.splice(i, 1);
      soldier.kill();
      //soldier.splice(i, 1);
@@ -158,8 +182,41 @@ function collisionHandler(bullet, soldier)
 
 function moveSoldiers(){
 
-    for (var i = 0; i < player.soldiers.length; i++) {
+    player.soldierGroup.forEach(function(soldier){
 
+        soldier.bringToTop();
+        if (soldier.path.length > 0) {
+            var path = soldier.path;
+
+            var pathX = path[soldier.pointer][0] * tileWidth + (tileWidth / 2);
+            var pathY = path[soldier.pointer][1] * tileHeight + (tileHeight / 2);
+
+            soldier.rotation = game.physics.arcade.moveToXY(soldier, pathX, pathY, 50);
+
+
+            if (Math.round(soldier.x) == pathX && Math.round(soldier.y) == pathY) {
+
+                if (path[soldier.pointer + 2]) {
+                    if (path[soldier.pointer][0] !== path[soldier.pointer + 2][0] && path[soldier.pointer][1] !== path[soldier.pointer + 2][1]) {
+                        soldier.pointer++;
+                    }
+                }
+
+                soldier.pointer++;
+
+            }
+
+            if(soldier.pointer > path.length - 1){
+                soldier.kill();
+            }
+
+        }
+        
+    });
+
+    /*for (var i = 0; i < player.soldiers.length; i++) {
+        
+        console.log(player.soldiers[i]);
         if (player.soldiers[i].path.length > 0) {
             var path = player.soldiers[i].path;
 
@@ -188,7 +245,7 @@ function moveSoldiers(){
 
         }
 
-    }
+    }*/
 
 }
 
@@ -284,21 +341,26 @@ spawnPlayerOnObject = function (listener, pointer) {
 
     var targetTile = getTargetTile(pointer);
 
-    var newSoldier = game.add.sprite(targetTile.x, targetTile.y, 'player');
+    var newSoldier = new Soldier(targetTile.x, targetTile.y, "blue");
+    //var newSoldier = game.add.sprite(targetTile.x, targetTile.y, 'player');
+
+    //var newSoldier = player.soldiers.create(targetTile.x, targetTile.y, 'player');
+    /*console.log(player.soldiers);
     game.physics.arcade.enable(newSoldier);
     newSoldier.bringToTop();
     newSoldier.anchor.setTo(0.5, 0.5);
 
     newSoldier.path = findPath([Math.floor(newSoldier.x / tileWidth), Math.floor(newSoldier.y / tileHeight)], [0, 0]);
 
-    newSoldier.pointer = 0;
+    newSoldier.pointer = 0;*/
 
-    player.soldiers.push(newSoldier);
+    //player.soldiers.push(newSoldier);
 
     player.funds -= 50;
     scoreText.text = "Funds: " + player.funds + " Cts";
 
 };
+
 
 function spawnTurretOnObject(listener, pointer){
 
