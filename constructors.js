@@ -5,6 +5,7 @@ var Player = function () {
     this.turrets = new TurretPool("blue");
     this.funds = 1000;
     this.health = 100;
+    this.team = "blue";
 
 };
 
@@ -59,6 +60,8 @@ fire = function (turret, target) {
         bullet.reset(turret.x, turret.y);
 
         bullet.rotation = game.physics.arcade.moveToObject(bullet, target, 500);
+
+        turret.bringToTop();
 
     }
 
