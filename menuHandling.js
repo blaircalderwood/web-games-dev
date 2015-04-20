@@ -52,6 +52,7 @@ function selectHost(listItem){
 function playGame(data){
 
     console.log(JSON.parse(data));
+    startGame();
 
 }
 
@@ -65,7 +66,7 @@ function hostWait(availability) {
 
                 getAjax("https://webgamesdev-blaircalderwood.c9.io/checkHost?name=" + playerName, playerJoined);
 
-            }, 200)
+            }, 500)
     }
 
 }
@@ -76,6 +77,8 @@ function playerJoined(data){
 
         console.log(data);
         clearInterval(hostTimer);
+
+        startGame();
 
     }
 
