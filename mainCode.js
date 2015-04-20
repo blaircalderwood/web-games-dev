@@ -73,26 +73,29 @@ function update() {
 
 }
 
-function startTimer(){
+function startTimer() {
 
-    serverTimer = setInterval(function() {
+    serverTimer = setInterval(function () {
         getAjax("https://webgamesdev-blaircalderwood.c9.io/update?team=" + player.team, updateListener);
     }, 200);
 
 }
 
-function updateListener(update){
+function updateListener(update) {
 
-    update = JSON.parse(update);
+    var team = JSON.parse(update);
 
-    for(var i = 0; i < update.length; i ++){
-        if(update[i].type == "soldier"){
-            spawnPlayerOnObject(update[i].x, update[i].y);
+    console.log(update);
+    for (var i = 0; i < team.length; i++) {
+
+        if (team[i].type == "soldier") {
+            spawnPlayerOnObject(team[i].x, team[i].y);
         }
-        else if(update[i].type == "turret"){
-            spawnTurretOnObject(update[i].x, update[i].y);
+        else if (team[i].type == "turret") {
+            spawnTurretOnObject(team[i].x, team[i].y);
         }
     }
+
 }
 
 function collisionHandler(bullet, soldier) {
@@ -157,7 +160,7 @@ function goalReached(soldier) {
 
 }
 
-function updateEnemyHealth(){
+function updateEnemyHealth() {
 
     //enemy.healthText.text = "Enemy health: " + enemy.health;
 
@@ -255,7 +258,7 @@ function createMap() {
 
 }
 
-function createText(){
+function createText() {
 
     var style = {font: "30px Arial", fill: "#FFFFFF", align: "center"};
     scoreText = game.add.text(game.world.centerX, game.world.centerY / 8, "Funds: " + player.funds + " Cts", style);
@@ -270,14 +273,14 @@ function createText(){
 
 }
 
-function newSoldier(listener, pointer){
+function newSoldier(listener, pointer) {
 
     var targetTile = getTargetTile(pointer);
     getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?team=" + player.team + "&type=soldier&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y));
 
 }
 
-function getAjax(url, callback){
+function getAjax(url, callback) {
 
     $.ajax({
         type: "GET",
@@ -285,14 +288,14 @@ function getAjax(url, callback){
         async: "true",
         contentType: "application/json",
         dataType: 'jsonp',
-        success: callback || function(){
+        success: callback || function () {
             console.log("DONE");
         }
     });
 
 }
 
-function newTurret(listener, pointer){
+function newTurret(listener, pointer) {
 
     var targetTile = getTargetTile(pointer);
 
@@ -300,7 +303,7 @@ function newTurret(listener, pointer){
 
 }
 
-function spawnPlayerOnObject (x, y) {
+function spawnPlayerOnObject(x, y) {
 
     var newSoldier = new Soldier(x, y, "blue");
 
