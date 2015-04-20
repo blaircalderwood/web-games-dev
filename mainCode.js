@@ -32,6 +32,8 @@ function startGame(){
 
 function preload() {
 
+    game.stage.disableVisibilityChange = true;
+
     for (var i = 0; i < tileImages.length; i++) game.load.image(tileImages[i].key, tileImages[i].src);
 
     game.load.spritesheet('player', 'assets/turnipStripBlue.png', 35, 25);
@@ -102,24 +104,28 @@ function update() {
 function startTimer() {
 
     serverTimer = setInterval(function () {
-        getAjax("https://webgamesdev-blaircalderwood.c9.io/update?team=" + player.team, updateListener);
+        getAjax("https://webgamesdev-blaircalderwood.c9.io/update?name=" + playerName, updateListener);
     }, 200);
 
 }
 
 function updateListener(update) {
 
-    var team = JSON.parse(update);
+    if(update !== "Connection Problem") {
 
-    console.log(update);
-    for (var i = 0; i < team.length; i++) {
+        var team = JSON.parse(update);
 
-        if (team[i].type == "soldier") {
-            spawnPlayerOnObject(team[i].x, team[i].y);
+        console.log(update);
+        for (var i = 0; i < team.length; i++) {
+
+            if (team[i].type == "soldier") {
+                spawnPlayerOnObject(team[i].x, team[i].y);
+            }
+            else if (team[i].type == "turret") {
+                spawnTurretOnObject(team[i].x, team[i].y);
+            }
         }
-        else if (team[i].type == "turret") {
-            spawnTurretOnObject(team[i].x, team[i].y);
-        }
+
     }
 
 }
@@ -318,9 +324,14 @@ function newSoldier(listener, pointer) {
 
     var targetTile = getTargetTile(pointer);
 
-    spawnPlayerOnObject(targetTile.x, targetTile.y);
-    //getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?team=" + player.team + "&type=soldier&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y));
+    //spawnPlayerOnObject(targetTile.x, targetTile.y);
+    console.log("Player placed");
+    getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?name=" + playerName + "&team=" + player.team + "&type=soldier&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y), itemPlaced);
 
+}
+
+function itemPlaced(data){
+    console.log(data);
 }
 
 function getAjax(url, callback) {
@@ -342,8 +353,8 @@ function newTurret(listener, pointer) {
 
     var targetTile = getTargetTile(pointer);
 
-    spawnTurretOnObject(targetTile.x, targetTile.y);
-    //getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?team=" + player.team + "&type=turret&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y));
+    //spawnTurretOnObject(targetTile.x, targetTile.y);
+    getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?name=" + playerName + "&team=" + player.team + "&type=turret&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y), itemPlaced);
 
 }
 
