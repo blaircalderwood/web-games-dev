@@ -1,5 +1,5 @@
-var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, soldierGroup, serverTimer;
-var  game = new Phaser.Game(1100, 500, Phaser.AUTO, '', {preload: preload, create: create, update: update});
+var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, soldierGroup, serverTimer, game;
+
 var playerSpawnTimer = 0;
 
 var gridCoords = [
@@ -54,8 +54,8 @@ function create() {
 
     createMap();
 
-   // getAjax("https://webgamesdev-blaircalderwood.c9.io/newGame", setPlayerTeams);
-      setPlayerTeams();
+    getAjax("https://webgamesdev-blaircalderwood.c9.io/newGame", setPlayerTeams);
+    //setPlayerTeams();
 }
 
 function setPlayerTeams(playerTeam){
