@@ -1,6 +1,4 @@
-var game = new Phaser.Game(1100, 500, Phaser.AUTO, '', {preload: preload, create: create, update: update});
-
-var tiles, player = {}, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, soldierGroup, serverTimer;
+var tiles, player, game, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, soldierGroup, serverTimer;
 
 var playerSpawnTimer = 0;
 
@@ -26,6 +24,12 @@ var tileImages = [
     {key: "neutralTile", src: "assets/neutralTile.jpg"}
 ];
 
+function startGame(){
+
+    game = new Phaser.Game(1100, 500, Phaser.AUTO, '', {preload: preload, create: create, update: update});
+
+}
+
 function preload() {
 
     for (var i = 0; i < tileImages.length; i++) game.load.image(tileImages[i].key, tileImages[i].src);
@@ -46,8 +50,18 @@ function create() {
 
     createMap();
 
-    player = new Player("blue");
-    enemy = new Player("red");
+    getAjax("https://webgamesdev-blaircalderwood.c9.io/newGame", setPlayerTeams);
+
+}
+
+function setPlayerTeams(playerTeam){
+
+    player = new Player(playerTeam);
+
+    console.log(playerTeam);
+
+    if(playerTeam == "red")enemy = new Player("blue");
+    else enemy = new Player("red");
 
     createText();
 
@@ -57,19 +71,23 @@ function create() {
 
 function update() {
 
-    moveSoldiers();
-    moveTurrets();
+    if(player) {
 
-    player.turrets.forEach(function (turret) {
+        moveSoldiers();
+        moveTurrets();
 
-        game.physics.arcade.overlap(turret.bullets, player.soldierPool, collisionHandler, null, this);
+        player.turrets.forEach(function (turret) {
 
-    });
+            game.physics.arcade.overlap(turret.bullets, player.soldierPool, collisionHandler, null, this);
 
-    player.soldierPool.forEach(function (soldier) {
+        });
 
-        soldier.bringToTop();
-    });
+        player.soldierPool.forEach(function (soldier) {
+
+            soldier.bringToTop();
+        });
+
+    }
 
 }
 
@@ -276,7 +294,9 @@ function createText() {
 function newSoldier(listener, pointer) {
 
     var targetTile = getTargetTile(pointer);
-    getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?team=" + player.team + "&type=soldier&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y));
+
+    spawnPlayerOnObject(targetTile.x, targetTile.y);
+    //getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?team=" + player.team + "&type=soldier&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y));
 
 }
 

@@ -9,9 +9,16 @@
     <script src="constructors.js"></script>
     <script src="mainCode.js"></script>
     <script src="aStar.js"></script>
+    <script src="menuHandling.js"></script>
 
 </head>
 <body>
+
+<label for="nameInput">Please insert your name</label>
+<input id="nameInput" type="text">
+<a onclick="submitName(true)">Host Game</a>
+<a onclick="submitName()">Join Game</a>
+<div id="playerList"></div>
 
 </body>
 </html>

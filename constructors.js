@@ -1,11 +1,11 @@
-var Player = function () {
+var Player = function (team) {
 
     this.soldierPool = new SoldierPool();
 
-    this.turrets = new TurretPool("blue");
+    this.turrets = new TurretPool(team);
     this.funds = 1000;
     this.health = 100;
-    this.team = "blue";
+    this.team = team;
 
 };
 
