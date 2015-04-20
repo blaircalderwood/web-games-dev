@@ -2,6 +2,8 @@ var Player = function (team) {
 
     this.soldierPool = new SoldierPool();
 
+    this.explosionPool = new ExplosionPool();
+
     this.turrets = new TurretPool(team);
     this.funds = 1000;
     this.health = 100;

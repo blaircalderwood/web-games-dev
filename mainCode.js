@@ -1,5 +1,5 @@
-var tiles, player, game, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, soldierGroup, serverTimer;
-
+var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, soldierGroup, serverTimer;
+var  game = new Phaser.Game(1100, 500, Phaser.AUTO, '', {preload: preload, create: create, update: update});
 var playerSpawnTimer = 0;
 
 var gridCoords = [
@@ -17,11 +17,11 @@ var gridCoords = [
 ];
 
 var tileImages = [
-    {key: "blueTile", src: "assets/blueGoalTile.jpg"},
-    {key: "redTile", src: "assets/redGoalTile.jpg"},
-    {key: "canWalkTile", src: "assets/canWalkTile.jpg"},
-    {key: "noWalkTile", src: "assets/noWalkTile.png"},
-    {key: "neutralTile", src: "assets/neutralTile.jpg"}
+    {key: "blueTile", src: "assets/blueBaseTileTurnip.png"},
+    {key: "redTile", src: "assets/redBaseTileTurnip.png"},
+    {key: "canWalkTile", src: "assets/grass2TileTurnip.png"},
+    {key: "noWalkTile", src: "assets/turretBaseStoneTileTurnip.png"},
+    {key: "neutralTile", src: "assets/pathLightTileTurnip.png"}
 ];
 
 function startGame(){
@@ -52,8 +52,8 @@ function create() {
 
     createMap();
 
-    getAjax("https://webgamesdev-blaircalderwood.c9.io/newGame", setPlayerTeams);
-
+   // getAjax("https://webgamesdev-blaircalderwood.c9.io/newGame", setPlayerTeams);
+      setPlayerTeams();
 }
 
 function setPlayerTeams(playerTeam){
@@ -132,11 +132,25 @@ function collisionHandler(bullet, soldier) {
 
     soldier.kill();
 
+    var explosion = player.explosionPool.getFirstExists(false);
+    explosion.reset(soldier.body.x, soldier.body.y);
+
+
+    player.explosionPool.forEach(function (explosion)
+    {
+        explosion.animations.add('explode');
+        explosion.animations.play('explode', 15, false, true);
+    })
+
 
     player.funds += 20;
     scoreText.text = "Funds: " + player.funds;
 
-
+    player.soldierPool.forEach(function (soldier)
+    {
+        soldier.animations.add('walk');
+        soldier.animations.play('walk', 5, true);
+    });
 }
 
 
