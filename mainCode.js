@@ -1,6 +1,6 @@
 var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, soldierGroup, serverTimer, game;
 
-var playerSpawnTimer = 0;
+var playerSpawnTimer;
 
 var gridCoords = [
     [3, 3, 3, 3, 3],
@@ -322,6 +322,13 @@ function createText() {
 
 function newSoldier(listener, pointer) {
 
+
+    /*
+    playerSpawnTimer = setTimeout(function () {
+             //work in progress
+     }, 500);
+     */
+
     var targetTile = getTargetTile(pointer);
 
     //spawnPlayerOnObject(targetTile.x, targetTile.y);
@@ -360,22 +367,32 @@ function newTurret(listener, pointer) {
 
 function spawnPlayerOnObject(x, y) {
 
-    var newSoldier = new Soldier(x, y, "blue");
 
-    newSoldier.bringToTop();
+    if(player.funds >= 50)    //if the funds are above 50 then do the following
+    {
 
-    player.funds -= 50;
-    scoreText.text = "Funds: " + player.funds + " Cts";
+        var newSoldier = new Soldier(x, y, "blue");
+
+        newSoldier.bringToTop();
+
+        player.funds -= 50;
+        scoreText.text = "Funds: " + player.funds + " Cts";
+    }
 
 }
 
 
 function spawnTurretOnObject(x, y) {
 
-    var newTurret = new Turret("blue", x, y);
 
-    player.funds -= 300;
-    scoreText.text = "Funds: " + player.funds + " Cts";
+    if(player.funds >= 300)    //if the funds are above 300 then do the following
+    {
+
+        var newTurret = new Turret("blue", x, y);
+
+        player.funds -= 300;
+        scoreText.text = "Funds: " + player.funds + " Cts";
+    }
 
 }
 
