@@ -32,6 +32,8 @@ function startGame(){
 
 function preload() {
 
+    game.stage.disableVisibilityChange = true;
+
     for (var i = 0; i < tileImages.length; i++) game.load.image(tileImages[i].key, tileImages[i].src);
 
     game.load.spritesheet('player', 'assets/turnipStripBlue.png', 35, 25);
@@ -103,23 +105,27 @@ function startTimer() {
 
     serverTimer = setInterval(function () {
         getAjax("https://webgamesdev-blaircalderwood.c9.io/update?name=" + playerName, updateListener);
-    }, 500);
+    }, 200);
 
 }
 
 function updateListener(update) {
 
-    var team = JSON.parse(update);
+    if(update !== "Connection Problem") {
 
-    console.log(update);
-    for (var i = 0; i < team.length; i++) {
+        var team = JSON.parse(update);
 
-        if (team[i].type == "soldier") {
-            spawnPlayerOnObject(team[i].x, team[i].y);
+        console.log(update);
+        for (var i = 0; i < team.length; i++) {
+
+            if (team[i].type == "soldier") {
+                spawnPlayerOnObject(team[i].x, team[i].y);
+            }
+            else if (team[i].type == "turret") {
+                spawnTurretOnObject(team[i].x, team[i].y);
+            }
         }
-        else if (team[i].type == "turret") {
-            spawnTurretOnObject(team[i].x, team[i].y);
-        }
+
     }
 
 }
