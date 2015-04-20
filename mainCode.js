@@ -1,6 +1,6 @@
 var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, soldierGroup, serverTimer, game;
 
-var playerSpawnTimer;
+var playerSpawnTimer = 0;
 
 var gridCoords = [
     [3, 3, 3, 3, 3],
@@ -119,10 +119,10 @@ function updateListener(update) {
         for (var i = 0; i < team.length; i++) {
 
             if (team[i].type == "soldier") {
-                spawnPlayerOnObject(team[i].x, team[i].y);
+                spawnPlayerOnObject(team[i].x, team[i].y, team[i].team);
             }
             else if (team[i].type == "turret") {
-                spawnTurretOnObject(team[i].x, team[i].y);
+                spawnTurretOnObject(team[i].x, team[i].y, team[i].team);
             }
         }
 
@@ -320,20 +320,18 @@ function createText() {
 
 }
 
+function isInOwnHalf(xCoord){
+  return ((xCoord < (game.width / 2) && player.team == "blue") || (xCoord > (game.width / 2) && player.team == "red"))
+}
 function newSoldier(listener, pointer) {
-
-
-    /*
-    playerSpawnTimer = setTimeout(function () {
-             //work in progress
-     }, 500);
-     */
 
     var targetTile = getTargetTile(pointer);
 
-    //spawnPlayerOnObject(targetTile.x, targetTile.y);
-    console.log("Player placed");
-    getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?name=" + playerName + "&team=" + player.team + "&type=soldier&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y), itemPlaced);
+    if(isInOwnHalf(targetTile.x)) {
+        //spawnPlayerOnObject(targetTile.x, targetTile.y);
+        console.log("Player placed");
+        getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?name=" + playerName + "&team=" + player.team + "&type=soldier&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y), itemPlaced);
+    }
 
 }
 
@@ -360,13 +358,16 @@ function newTurret(listener, pointer) {
 
     var targetTile = getTargetTile(pointer);
 
-    //spawnTurretOnObject(targetTile.x, targetTile.y);
-    getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?name=" + playerName + "&team=" + player.team + "&type=turret&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y), itemPlaced);
+    if(isInOwnHalf(targetTile.x)) {
+        //spawnTurretOnObject(targetTile.x, targetTile.y);
+        getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?name=" + playerName + "&team=" + player.team + "&type=turret&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y), itemPlaced);
+    }
 
 }
 
-function spawnPlayerOnObject(x, y) {
+function spawnPlayerOnObject(x, y, team) {
 
+    var newSoldier = new Soldier(x, y, team);
 
     if(player.funds >= 50)    //if the funds are above 50 then do the following
     {
@@ -382,8 +383,9 @@ function spawnPlayerOnObject(x, y) {
 }
 
 
-function spawnTurretOnObject(x, y) {
+function spawnTurretOnObject(x, y, team) {
 
+    var newTurret = new Turret("blue", x, y, team);
 
     if(player.funds >= 300)    //if the funds are above 300 then do the following
     {

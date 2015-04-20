@@ -1,6 +1,6 @@
 var Player = function (team) {
 
-    this.soldierPool = new SoldierPool();
+    this.soldierPool = new SoldierPool(team);
 
     this.explosionPool = new ExplosionPool();
 
@@ -19,7 +19,15 @@ var Soldier = function (x, y, team) {
 
         newSoldier.reset(x, y);
 
-        newSoldier.path = findPath([Math.floor(newSoldier.x / tileWidth), Math.floor(newSoldier.y / tileHeight)], [0, 0]);
+        console.log(team);
+        if(team == "blue"){
+            newSoldier.path = findPath([Math.floor(newSoldier.x / tileWidth), Math.floor(newSoldier.y / tileHeight)], [11, 3]);
+            console.log(newSoldier.path);
+        }
+        else{
+            newSoldier.path = findPath([Math.floor(newSoldier.x / tileWidth), Math.floor(newSoldier.y / tileHeight)], [0, 3]);
+            console.log(newSoldier.path);
+        }
 
         newSoldier.pointer = 0;
 
@@ -144,13 +152,18 @@ var TurretPool = function (team) {
 
 };
 
-var SoldierPool = function () {
+var SoldierPool = function (team) {
 
     var soldiers = game.add.group();
     soldiers.enableBody = true;
     soldiers.physicsBodyType = Phaser.Physics.ARCADE;
 
-    soldiers.createMultiple(30, 'player', 0, false);
+    if(team == "blue") {
+        soldiers.createMultiple(30, 'player', 0, false);
+    }
+    else{
+        soldiers.createMultiple(30, 'player2', 0, false);
+    }
 
     soldiers.setAll('anchor.x', 0.5);
     soldiers.setAll('anchor.y', 0.5);
