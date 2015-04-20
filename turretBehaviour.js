@@ -11,7 +11,7 @@ function preload() {
     game.load.image('earth', 'assets/scorched_earth.png');
     game.load.image('player', 'assets/ship.png');
     game.load.image('player2', 'assets/tank1.png');
-    //game.load.spritesheet('kaboom', 'assets/explosion.png', 64, 64, 23);
+    //game.load.spritesheet('kaboom', 'assets/turnipExplosion.png', 32, 32, 11);
     game.load.image('redTurret', 'assets/redTurret.png');
     game.load.image('redBullet', 'assets/redBullet.png');
 }

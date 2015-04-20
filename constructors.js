@@ -158,3 +158,16 @@ var SoldierPool = function () {
     return soldiers;
 
 };
+
+
+var ExplosionPool = function(){
+
+    var explosions = game.add.group();
+    explosions.enableBody = true;
+    explosions.physicsBodyType = Phaser.Physics.ARCADE;
+
+    explosions.createMultiple(30, 'kaboom', 0, false);
+
+    return explosions;
+
+}

@@ -34,7 +34,8 @@ function preload() {
 
     for (var i = 0; i < tileImages.length; i++) game.load.image(tileImages[i].key, tileImages[i].src);
 
-    game.load.image('player', 'assets/ship.png');
+    game.load.spritesheet('player', 'assets/turnipStripBlue.png', 35, 25);
+    game.load.spritesheet('player2', 'assets/turnipStripRed.png', 35, 25);
 
     game.load.image('redTurret', 'assets/redTurret.png');
     game.load.image('redBullet', 'assets/redBullet.png');
@@ -42,6 +43,7 @@ function preload() {
     game.load.image('blueTurret', 'assets/blueTurret.png');
     game.load.image('blueBullet', 'assets/blueBullet.png');
 
+    game.load.spritesheet('kaboom', 'assets/turnipExplosion.png', 32, 32, 11);
 }
 
 function create() {
@@ -62,6 +64,12 @@ function setPlayerTeams(playerTeam){
 
     if(playerTeam == "red")enemy = new Player("blue");
     else enemy = new Player("red");
+
+    player.soldierPool.forEach(function (soldier)
+    {
+       soldier.animations.add('walk');
+       soldier.animations.play('walk', 5, true);
+    });
 
     createText();
 
@@ -123,6 +131,7 @@ function collisionHandler(bullet, soldier) {
     bullet.kill();
 
     soldier.kill();
+
 
     player.funds += 20;
     scoreText.text = "Funds: " + player.funds;
@@ -319,7 +328,8 @@ function newTurret(listener, pointer) {
 
     var targetTile = getTargetTile(pointer);
 
-    getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?team=" + player.team + "&type=turret&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y));
+    spawnTurretOnObject(targetTile.x, targetTile.y);
+    //getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?team=" + player.team + "&type=turret&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y));
 
 }
 
@@ -343,6 +353,8 @@ function spawnTurretOnObject(x, y) {
     scoreText.text = "Funds: " + player.funds + " Cts";
 
 }
+
+
 
 function getTargetTile(pointer) {
 
