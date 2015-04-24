@@ -96,67 +96,6 @@ function create() {
 
 }
 
-function playPressed() {
-
-    if(instrPageOpenBool == false)
-    {
-
-        game.world.remove(buttonGroup);
-
-        buttonGroup.destroy();
-        starterMenu.destroy();
-        //instrPage.destroy();
-        //instrButtonGroup.destroy();
-
-        playAction();
-
-    }
-
-}
-
-function instrPressed() {
-
-    if(instrPageOpenBool == false)
-    {
-        instrAction();
-    }
-
-}
-
-
-function backPressed() {
-
-    backAction();
-
-}
-
-
-
-
-function overPlay() {
-    console.log('button over play');
-}
-
-function outPlay() {
-    console.log('button out play');
-}
-
-function overInstr() {
-    console.log('button over instr');
-}
-
-function outInstr() {
-    console.log('button out instr');
-}
-
-function overBack() {
-    console.log('button over back');
-}
-
-function outBack() {
-    console.log('button out back');
-}
-
 
 
 
