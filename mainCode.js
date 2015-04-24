@@ -1,5 +1,5 @@
 var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, redSoldierPool,
-    blueSoldierPool, redTurretPool, blueTurretPool, serverTimer, game;
+    blueSoldierPool, redTurretPool, blueTurretPool, serverTimer, game, playerTeam;
 
 var playerSpawnTimer = 0;
 
@@ -55,11 +55,11 @@ function create() {
 
     createMap();
 
-    getAjax("https://webgamesdev-blaircalderwood.c9.io/newGame", setPlayerTeams);
+    setPlayerTeams();
     //setPlayerTeams();
 }
 
-function setPlayerTeams(playerTeam){
+function setPlayerTeams(){
 
     function animateSoldiers(soldier) {
         soldier.animations.add('walk');

@@ -51,6 +51,7 @@ function selectHost(listItem){
 
 function playGame(data){
 
+    playerTeam = "red";
     console.log(JSON.parse(data));
     startGame();
 
@@ -75,6 +76,7 @@ function playerJoined(data){
 
     if(data == "Player Joined"){
 
+        playerTeam = "blue";
         console.log(data);
         clearInterval(hostTimer);
 
