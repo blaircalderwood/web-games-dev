@@ -1,7 +1,9 @@
 var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, redSoldierPool,
-    blueSoldierPool, redTurretPool, blueTurretPool, serverTimer, game, playerTeam;
+    blueSoldierPool, redTurretPool, blueTurretPool, serverTimer, game;
 
 var playerSpawnTimer = 0;
+
+var health, healthBarBlue, barBackground, healthBarRed, barBackground2, buttonGroup;
 
 var gridCoords = [
     [3, 3, 3, 3, 3],
@@ -47,19 +49,77 @@ function preload() {
     game.load.image('blueBullet', 'assets/blueBullet.png');
 
     game.load.spritesheet('kaboom', 'assets/turnipExplosion.png', 32, 32, 11);
+
+    game.load.image('healthBarBlue', 'assets/healthBar.png');
+    game.load.image('healthBarRed', 'assets/healthBar2.png');
+    game.load.image('healthBarBackground', 'assets/healthBarBackground.png');
+
+    game.load.image('playButtonOut', 'assets/playButton.png');
+    game.load.image('playButtonOver', 'assets/playButtonGo.png');
 }
 
 function create() {
 
     tiles = game.add.group();
 
-    createMap();
+    buttonGroup = game.add.group();
 
     setPlayerTeams();
+    var button = game.make.button(game.world.centerX - 232, game.world.centerY - 96, 'playButtonOut', removeGroup, this, 2, 1, 0);
+
+    button.onInputOver.add(over, this);
+    button.onInputOut.add(out, this);
+
+    buttonGroup.add(button);
+
+
+    //createMap();
+
+    barBackground = game.add.sprite(0, 0, 'healthBarBackground');
+    healthBarBlue = game.add.sprite(0, 0,'healthBarBlue');
+
+    barBackground2 = game.add.sprite(game.world.width - 20, 0, 'healthBarBackground');
+    healthBarRed = game.add.sprite(game.world.width - 20, 0,'healthBarRed');
+
+    getAjax("https://webgamesdev-blaircalderwood.c9.io/newGame", setPlayerTeams);
     //setPlayerTeams();
+
+
 }
 
 function setPlayerTeams(){
+function removeGroup() {
+
+    game.world.remove(buttonGroup);
+
+    buttonGroup.destroy();
+
+    actionOnClick();
+
+}
+
+
+
+function over() {
+    console.log('button over');
+}
+
+function out() {
+
+
+    console.log('button out');
+}
+
+function actionOnClick () {
+
+    console.log('button clicked');
+    createMap();
+
+}
+
+
+
+function setPlayerTeams(playerTeam){
 
     function animateSoldiers(soldier) {
         soldier.animations.add('walk');
@@ -251,11 +311,31 @@ function goalReached(soldier) {
     enemy.health -= 10;
     updateEnemyHealth();
 
+    function setHealthBar(targetPlayer) {
+        if (targetPlayer.healthBar.height >= 50) {
+            targetPlayer.healthBar.height -= 50;
+            targetPlayer.healthBar.y += 50;
+
+            targetPlayer.funds += 200;
+            scoreText.text = "Funds: " + targetPlayer.funds + " Cts";
+        }
+    }
+
+    if(soldier.team !== player.team)
+    {
+        setHealthBar(player);
+    }
+    else
+    {
+        setHealthBar(enemy);
+    }
+
 }
+
 
 function updateEnemyHealth() {
 
-    //enemy.healthText.text = "Enemy health: " + enemy.health;
+    enemy.healthText.text = "Enemy health: " + enemy.health;
 
 }
 
@@ -355,7 +435,8 @@ function createText() {
     scoreText = game.add.text(game.world.centerX, game.world.centerY / 8, "Funds: " + player.funds + " Cts", style);
     scoreText.anchor.set(0.5);
 
-    //enemy.healthText = game.add.text(game.world.width / 3, game.world.height / 2, "Enemy Health: " + enemy.health, style);
+    enemy.healthText = game.add.text(game.world.width / 3, game.world.height / 2, "Enemy Health: " + enemy.health, style);
+
 
     scoreTimer = setInterval(function () {
         player.funds += 100;

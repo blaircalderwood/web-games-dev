@@ -6,6 +6,12 @@ var Player = function (team) {
     this.health = 100;
     this.team = team;
 
+    if(team == "blue")
+    {
+        this.healthBar = healthBarBlue;
+    }
+    else this.healthBar = healthBarRed;
+
 };
 
 var Soldier = function (x, y, team) {
