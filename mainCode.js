@@ -1,6 +1,8 @@
-var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, soldierGroup, serverTimer, game;
+var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, serverTimer, game;
 
 var playerSpawnTimer = 0;
+
+var health, bar, barBackground, bar2, barBackground2;
 
 var gridCoords = [
     [3, 3, 3, 3, 3],
@@ -46,6 +48,9 @@ function preload() {
     game.load.image('blueBullet', 'assets/blueBullet.png');
 
     game.load.spritesheet('kaboom', 'assets/turnipExplosion.png', 32, 32, 11);
+
+    game.load.image('healthBar', 'assets/healthBar.png');
+    game.load.image('healthBarBackground', 'assets/healthBarBackground.png');
 }
 
 function create() {
@@ -56,6 +61,14 @@ function create() {
 
     getAjax("https://webgamesdev-blaircalderwood.c9.io/newGame", setPlayerTeams);
     //setPlayerTeams();
+
+    barBackground = game.add.sprite(0, 0, 'healthBarBackground');
+    bar = game.add.sprite(0, 0,'healthBar');
+
+    barBackground2 = game.add.sprite(game.world.width - 20, 0, 'healthBarBackground');
+    bar2 = game.add.sprite(game.world.width - 20, 0,'healthBar');
+
+
 }
 
 function setPlayerTeams(playerTeam){
@@ -205,11 +218,22 @@ function goalReached(soldier) {
     enemy.health -= 10;
     updateEnemyHealth();
 
+
+    if(bar.height >= 50)
+    {
+        bar.height -= 50;
+        bar.y += 50;
+
+        player.funds += 100;
+        scoreText.text = "Funds: " + player.funds + " Cts";
+    }
+
+
 }
 
 function updateEnemyHealth() {
 
-    //enemy.healthText.text = "Enemy health: " + enemy.health;
+    enemy.healthText.text = "Enemy health: " + enemy.health;
 
 }
 
@@ -311,7 +335,8 @@ function createText() {
     scoreText = game.add.text(game.world.centerX, game.world.centerY / 8, "Funds: " + player.funds + " Cts", style);
     scoreText.anchor.set(0.5);
 
-    //enemy.healthText = game.add.text(game.world.width / 3, game.world.height / 2, "Enemy Health: " + enemy.health, style);
+    enemy.healthText = game.add.text(game.world.width / 3, game.world.height / 2, "Enemy Health: " + enemy.health, style);
+
 
     scoreTimer = setInterval(function () {
         player.funds += 100;
