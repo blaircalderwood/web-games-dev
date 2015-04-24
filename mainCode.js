@@ -1,8 +1,8 @@
-var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, soldierGroup, serverTimer, game;
+var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, serverTimer, game, redSoldierPool, blueSoldierPool, redTurretPool, blueTurretPool;
 
 var playerSpawnTimer = 0;
 
-var health, bar, barBackground, bar2, barBackground2;
+var health, healthBarBlue, barBackground, healthBarRed, barBackground2;
 
 var gridCoords = [
     [3, 3, 3, 3, 3],
@@ -49,7 +49,8 @@ function preload() {
 
     game.load.spritesheet('kaboom', 'assets/turnipExplosion.png', 32, 32, 11);
 
-    game.load.image('healthBar', 'assets/healthBar.png');
+    game.load.image('healthBarBlue', 'assets/healthBar.png');
+    game.load.image('healthBarRed', 'assets/healthBar2.png');
     game.load.image('healthBarBackground', 'assets/healthBarBackground.png');
 }
 
@@ -59,14 +60,16 @@ function create() {
 
     createMap();
 
+    barBackground = game.add.sprite(0, 0, 'healthBarBackground');
+    healthBarBlue = game.add.sprite(0, 0,'healthBarBlue');
+
+    barBackground2 = game.add.sprite(game.world.width - 20, 0, 'healthBarBackground');
+    healthBarRed = game.add.sprite(game.world.width - 20, 0,'healthBarRed');
+
     getAjax("https://webgamesdev-blaircalderwood.c9.io/newGame", setPlayerTeams);
     //setPlayerTeams();
 
-    barBackground = game.add.sprite(0, 0, 'healthBarBackground');
-    bar = game.add.sprite(0, 0,'healthBar');
 
-    barBackground2 = game.add.sprite(game.world.width - 20, 0, 'healthBarBackground');
-    bar2 = game.add.sprite(game.world.width - 20, 0,'healthBar');
 
 
 }
@@ -263,18 +266,27 @@ function goalReached(soldier) {
     enemy.health -= 10;
     updateEnemyHealth();
 
+    function setHealthBar(targetPlayer) {
+        if (targetPlayer.healthBar.height >= 50) {
+            targetPlayer.healthBar.height -= 50;
+            targetPlayer.healthBar.y += 50;
 
-    if(bar.height >= 50)
-    {
-        bar.height -= 50;
-        bar.y += 50;
-
-        player.funds += 100;
-        scoreText.text = "Funds: " + player.funds + " Cts";
+            targetPlayer.funds += 200;
+            scoreText.text = "Funds: " + targetPlayer.funds + " Cts";
+        }
     }
 
+    if(soldier.team !== player.team)
+    {
+        setHealthBar(player);
+    }
+    else
+    {
+        setHealthBar(enemy);
+    }
 
 }
+
 
 function updateEnemyHealth() {
 
