@@ -1,7 +1,7 @@
-var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, serverTimer, game, buttonGroup, barBackground, barBackground2, healthBarBlue, healthBarRed, starterMenu, instrPage, instrButtonGroup, instrPageOpenBool;
+var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, serverTimer, game, buttonGroup, barBackground, barBackground2, healthBarBlue, healthBarRed;
 
 var red = {}, blue = {};
-
+game = new Phaser.Game(1100, 500, Phaser.AUTO, '', {preload: preload, create: create, update: update});
 var gridCoords = [
     [3, 3, 3, 3, 3],
     [0, 0, 0, 0, 0],
@@ -26,8 +26,6 @@ var tileImages = [
 
 function startGame() {
 
-    game = new Phaser.Game(1100, 500, Phaser.AUTO, '', {preload: preload, create: create, update: update});
-    instrPageOpenBool = false;
 
 }
 
@@ -54,111 +52,63 @@ function preload() {
 
     game.load.image('playButtonOut', 'assets/playButton.png');
     game.load.image('playButtonOver', 'assets/playButtonGo.png');
-
-    game.load.image('instructionButtonOut', 'assets/instructionButton.png');
-    game.load.image('instructionButtonOver', 'assets/instructionButtonGo.png');
-
-    game.load.image('backButtonOut', 'assets/backButton.png');
-
-    game.load.image('startMenu', 'assets/starterPage.png');
-    game.load.image('instructionPage', 'assets/turnipInstructions.png');
 }
 
 function create() {
 
-    //tiles = game.add.group();
+    $("#hostSettings").hide();
 
-    starterMenu = game.add.sprite(0, 0, 'startMenu');
+    tiles = game.add.group();
+
     buttonGroup = game.add.group();
 
+    var button = game.make.button(game.world.centerX - 232, game.world.centerY - 96, 'playButtonOut', removeGroup, this, 2, 1, 0);
 
-    var playButton = game.make.button(200, 175, 'playButtonOut', playPressed, this, 2, 1, 0);
-    playButton.width = 328;
-    playButton.height = 124;
+    button.onInputOver.add(over, this);
+    button.onInputOut.add(out, this);
 
-    var instructionButton = game.make.button(200, 325, 'instructionButtonOut', instrPressed, this, 2, 1, 0);
-    instructionButton.width = 328;
-    instructionButton.height = 124;
-
-    playButton.onInputOver.add(overPlay, this);
-    playButton.onInputOut.add(outPlay, this);
-
-    instructionButton.onInputOver.add(overInstr, this);
-    instructionButton.onInputOut.add(outInstr, this);
-
-    buttonGroup.add(playButton);
-    //buttonGroup.add(backButton);
-    buttonGroup.add(instructionButton);
-
+    buttonGroup.add(button);
 
     //createMap();
 
+    //setPlayerTeams(playerTeam);
+
+}
+
+function removeGroup() {
+
+    game.world.remove(buttonGroup);
+
+    buttonGroup.destroy();
+
+    $("#hostSettings").show();
 
 }
 
 
-
-
-function playAction() {
-
-     console.log('button clicked');
-     tiles = game.add.group();
-     createMap();
-
-     barBackground = game.add.sprite(0, 0, 'healthBarBackground');
-     healthBarBlue = game.add.sprite(0, 0, 'healthBarBlue');
-
-     barBackground2 = game.add.sprite(game.world.width - 20, 0, 'healthBarBackground');
-     healthBarRed = game.add.sprite(game.world.width - 20, 0, 'healthBarRed');
-
-
-     setPlayerTeams(playerTeam);
-
+function over() {
+    console.log('button over');
 }
 
+function out() {
 
-function instrAction()
-{
-    instrPageOpenBool = true;
 
-    instrPage = game.add.sprite(0, 0, 'instructionPage');
+    console.log('button out');
+}
 
-    instrButtonGroup = game.add.group();
+function actionOnClick() {
 
-    //instrPage = game.add.sprite(0, 0, 'instructionPage');
+    console.log('button clicked');
 
-    var backButton = game.make.button(game.world.width - 210, game.world.height - 64, 'backButtonOut', backPressed, this, 2, 1, 0);
-    backButton.width = 200;
-    backButton.height = 54;
+    $("#hostSettings").hide();
+    $("#playerList").hide();
+    createMap();
 
-    backButton.onInputOver.add(overBack, this);
-    backButton.onInputOut.add(outBack, this);
-
-    instrButtonGroup.add(backButton);
-
-    instrPage.bringToTop();
-    game.world.bringToTop(instrButtonGroup);    //bring groups to top
-    //backButton.bringToTop();
-
-   // game.world.remove(starterMenu);
-
+    createHealthBars();
+    setPlayerTeams(playerTeam);
 
 
 }
-
-
-
-function backAction()
-{
-    instrPageOpenBool = false;
-    game.world.remove(instrPage);
-    game.world.sendToBack(instrButtonGroup);
-
-}
-
-
-
-
 
 function setPlayerTeams(playerTeam) {
 
@@ -189,6 +139,16 @@ function setPlayerTeams(playerTeam) {
     createText();
 
     startTimer();
+
+}
+
+function createHealthBars() {
+
+    barBackground = game.add.sprite(0, 0, 'healthBarBackground');
+    healthBarBlue = game.add.sprite(0, 0, 'healthBarBlue');
+
+    barBackground2 = game.add.sprite(game.world.width - 20, 0, 'healthBarBackground');
+    healthBarRed = game.add.sprite(game.world.width - 20, 0, 'healthBarRed');
 
 }
 
@@ -248,9 +208,7 @@ function startTimer() {
 
 function updateListener(update) {
 
-    if (update == "Player Dead")console.log("Player is dead");
-
-    else if (update == "Partner Disconnected") {
+    if (update == "Partner Disconnected") {
         console.log(update);
     }
 
@@ -258,8 +216,9 @@ function updateListener(update) {
 
         var team = JSON.parse(update);
 
-        console.log(update);
         for (var i = 0; i < team.length; i++) {
+
+            if(team[i] == "Player Dead")gameOver("The enemy is dead. You have won!");
 
             if (team[i].type == "soldier") {
                 spawnPlayerOnObject(team[i].x, team[i].y, team[i].team);
@@ -344,20 +303,18 @@ function moveSoldiers() {
 
 function goalReached(soldier) {
 
-    soldier.kill();
-    enemy.health -= 10;
-    updateEnemyHealth();
-    if (soldier.team == enemy.team) {
-        getAjax("https://webgamesdev-blaircalderwood.c9.io/playerDead?name=" + playerName, playerDead);
-    }
-
     function setHealthBar(targetPlayer) {
         if (targetPlayer.healthBar.height >= 50) {
             targetPlayer.healthBar.height -= 50;
             targetPlayer.healthBar.y += 50;
 
+            targetPlayer.health -= 50;
+
             targetPlayer.funds += 200;
             scoreText.text = "Funds: " + targetPlayer.funds + " Cts";
+        }
+        if (soldier.team !== player.team && player.health <= 0) {
+            getAjax("https://webgamesdev-blaircalderwood.c9.io/playerDead?name=" + playerName, playerDead);
         }
     }
 
@@ -368,19 +325,27 @@ function goalReached(soldier) {
         setHealthBar(enemy);
     }
 
-}
-
-
-function updateEnemyHealth() {
-
-    //enemy.healthText.text = "Enemy health: " + enemy.health;
+    soldier.kill();
 
 }
 
 function playerDead(data) {
 
     console.log(data);
-    enemy.healthText.text = "Enemy health: " + enemy.health;
+    gameOver("You have lost the game")
+
+}
+
+function gameOver(text) {
+
+    console.log(text);
+    clearInterval(serverTimer);
+
+    getAjax("https://webgamesdev-blaircalderwood.c9.io/deadNotified?name=" + playerName, showMenuButtons)
+}
+
+function showMenuButtons(){
+
 
 }
 
