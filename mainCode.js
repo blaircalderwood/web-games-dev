@@ -1,7 +1,7 @@
 var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, serverTimer, game, buttonGroup, barBackground, barBackground2, healthBarBlue, healthBarRed;
 
 var red = {}, blue = {};
-
+game = new Phaser.Game(1100, 500, Phaser.AUTO, '', {preload: preload, create: create, update: update});
 var gridCoords = [
     [3, 3, 3, 3, 3],
     [0, 0, 0, 0, 0],
@@ -26,7 +26,7 @@ var tileImages = [
 
 function startGame() {
 
-    game = new Phaser.Game(1100, 500, Phaser.AUTO, '', {preload: preload, create: create, update: update});
+
 
 }
 
@@ -57,11 +57,11 @@ function preload() {
 
 function create() {
 
+    $("#hostSettings").hide();
+
     tiles = game.add.group();
 
     buttonGroup = game.add.group();
-
-    setPlayerTeams();
 
     var button = game.make.button(game.world.centerX - 232, game.world.centerY - 96, 'playButtonOut', removeGroup, this, 2, 1, 0);
 
@@ -69,7 +69,6 @@ function create() {
     button.onInputOut.add(out, this);
 
     buttonGroup.add(button);
-
 
     //createMap();
 
@@ -79,9 +78,7 @@ function create() {
     barBackground2 = game.add.sprite(game.world.width - 20, 0, 'healthBarBackground');
     healthBarRed = game.add.sprite(game.world.width - 20, 0, 'healthBarRed');
 
-    getAjax("https://webgamesdev-blaircalderwood.c9.io/newGame", setPlayerTeams);
-    //setPlayerTeams();
-
+    //setPlayerTeams(playerTeam);
 
 }
 
@@ -91,7 +88,7 @@ function removeGroup() {
 
     buttonGroup.destroy();
 
-    actionOnClick();
+    $("#hostSettings").show();
 
 }
 
@@ -109,10 +106,13 @@ function out() {
 function actionOnClick() {
 
     console.log('button clicked');
+
+    $("#hostSettings").hide();
+    $("#playerList").hide();
     createMap();
+    setPlayerTeams(playerTeam);
 
 }
-
 
 function setPlayerTeams(playerTeam) {
 
@@ -202,7 +202,7 @@ function startTimer() {
 
 function updateListener(update) {
 
-    if (update == "Player Dead")console.log("Player is dead");
+    if (JSON.parse(update) == "Player Dead")console.log("Player is dead");
 
     else if (update == "Partner Disconnected") {
         console.log(update);
@@ -212,7 +212,6 @@ function updateListener(update) {
 
         var team = JSON.parse(update);
 
-        console.log(update);
         for (var i = 0; i < team.length; i++) {
 
             if (team[i].type == "soldier") {
@@ -298,20 +297,18 @@ function moveSoldiers() {
 
 function goalReached(soldier) {
 
-    soldier.kill();
-    enemy.health -= 10;
-    updateEnemyHealth();
-    if (soldier.team == enemy.team) {
-        getAjax("https://webgamesdev-blaircalderwood.c9.io/playerDead?name=" + playerName, playerDead);
-    }
-
     function setHealthBar(targetPlayer) {
         if (targetPlayer.healthBar.height >= 50) {
             targetPlayer.healthBar.height -= 50;
             targetPlayer.healthBar.y += 50;
 
+            targetPlayer.health -= 50;
+
             targetPlayer.funds += 200;
             scoreText.text = "Funds: " + targetPlayer.funds + " Cts";
+        }
+        if (soldier.team !== player.team && player.health <= 0) {
+            getAjax("https://webgamesdev-blaircalderwood.c9.io/playerDead?name=" + playerName, playerDead);
         }
     }
 
@@ -322,19 +319,19 @@ function goalReached(soldier) {
         setHealthBar(enemy);
     }
 
-}
-
-
-function updateEnemyHealth() {
-
-    //enemy.healthText.text = "Enemy health: " + enemy.health;
+    soldier.kill();
 
 }
 
 function playerDead(data) {
 
     console.log(data);
-    enemy.healthText.text = "Enemy health: " + enemy.health;
+    gameOver("You have lost the game")
+
+}
+
+function gameOver(text){
+
 
 }
 
