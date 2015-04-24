@@ -270,7 +270,7 @@ function moveTurrets() {
 
                 if (turret.alive) {
                     console.log(turret);
-                    if (game.physics.arcade.distanceBetween(turret, soldier) < 300) {
+                    if (game.physics.arcade.distanceBetween(turret, soldier) < 300 && turret.team !== soldier.team) {
                         rotate(turret, soldier);
 
                     }
