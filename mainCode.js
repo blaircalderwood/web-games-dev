@@ -1,4 +1,5 @@
-var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, soldierGroup, serverTimer, game;
+var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, redSoldierPool,
+    blueSoldierPool, redTurretPool, blueTurretPool, serverTimer, game;
 
 var playerSpawnTimer = 0;
 
@@ -60,6 +61,16 @@ function create() {
 
 function setPlayerTeams(playerTeam){
 
+    function animateSoldiers(soldier) {
+        soldier.animations.add('walk');
+        soldier.animations.play('walk', 5, true);
+    }
+
+    redSoldierPool = new SoldierPool("red");
+    blueSoldierPool = new SoldierPool("blue");
+    redTurretPool = new TurretPool("red");
+    blueTurretPool = new TurretPool("blue");
+
     player = new Player(playerTeam);
 
     console.log(playerTeam);
@@ -67,10 +78,13 @@ function setPlayerTeams(playerTeam){
     if(playerTeam == "red")enemy = new Player("blue");
     else enemy = new Player("red");
 
-    player.soldierPool.forEach(function (soldier)
+    redSoldierPool.forEach(function (soldier)
     {
-       soldier.animations.add('walk');
-       soldier.animations.play('walk', 5, true);
+        animateSoldiers(soldier);
+    });
+    blueSoldierPool.forEach(function (soldier)
+    {
+        animateSoldiers(soldier);
     });
 
     createText();
@@ -86,18 +100,52 @@ function update() {
         moveSoldiers();
         moveTurrets();
 
-        player.turrets.forEach(function (turret) {
+        forEachTurret(function (turret) {
 
-            game.physics.arcade.overlap(turret.bullets, player.soldierPool, collisionHandler, null, this);
+            game.physics.arcade.overlap(turret.bullets, redSoldierPool, collisionHandler, null, this);
+            game.physics.arcade.overlap(turret.bullets, blueSoldierPool, collisionHandler, null, this);
 
         });
 
-        player.soldierPool.forEach(function (soldier) {
-
+        /*redSoldierPool.forEach(function (soldier) {
             soldier.bringToTop();
         });
+        
+        blueSoldierPool.forEach(function (soldier) {
+            soldier.bringToTop();
+        });*/
+        
+        forEachSoldier(function(soldier){
+            soldier.bringToTop();
+        })
 
     }
+
+}
+
+function forEachSoldier(targetFunction){
+
+    redSoldierPool.forEach(function (targetVar) {
+        targetVar.team = "red";
+        targetFunction(targetVar);
+    });
+    blueSoldierPool.forEach(function (targetVar) {
+        targetVar.team = "blue";
+        targetFunction(targetVar);
+    });
+
+}
+
+function forEachTurret(targetFunction){
+
+    redTurretPool.forEach(function (targetVar) {
+        targetVar.team = "red";
+        targetFunction(targetVar);
+    });
+    blueTurretPool.forEach(function (targetVar) {
+        targetVar.team = "blue";
+        targetFunction(targetVar);
+    });
 
 }
 
@@ -146,13 +194,13 @@ function collisionHandler(bullet, soldier) {
     {
         explosion.animations.add('explode');
         explosion.animations.play('explode', 15, false, true);
-    })
+    });
 
 
     player.funds += 20;
     scoreText.text = "Funds: " + player.funds;
 
-    player.soldierPool.forEach(function (soldier)
+    forEachSoldier(function (soldier)
     {
         soldier.animations.add('walk');
         soldier.animations.play('walk', 5, true);
@@ -162,7 +210,7 @@ function collisionHandler(bullet, soldier) {
 
 function moveSoldiers() {
 
-    player.soldierPool.forEach(function (soldier) {
+    forEachSoldier(function (soldier) {
 
         if (soldier.alive) {
 
@@ -215,17 +263,15 @@ function updateEnemyHealth() {
 
 function moveTurrets() {
 
-    player.soldierPool.forEach(function (soldier) {
+    forEachSoldier(function (soldier) {
 
         if (soldier.alive) {
-            player.turrets.forEach(function (turret) {
+            forEachTurret(function (turret) {
 
                 if (turret.alive) {
-
+                    console.log(turret);
                     if (game.physics.arcade.distanceBetween(turret, soldier) < 300) {
                         rotate(turret, soldier);
-                        //fire(turret, soldier);
-                        //if (turret.target !== undefined) turret.sprite.rotation = game.physics.arcade.angleBetween(turret.sprite, soldier);
 
                     }
 
@@ -323,6 +369,7 @@ function createText() {
 function isInOwnHalf(xCoord){
   return ((xCoord < (game.width / 2) && player.team == "blue") || (xCoord > (game.width / 2) && player.team == "red"))
 }
+
 function newSoldier(listener, pointer) {
 
     var targetTile = getTargetTile(pointer);
@@ -383,12 +430,12 @@ function spawnPlayerOnObject(x, y, team) {
 
 function spawnTurretOnObject(x, y, team) {
 
-    var newTurret = new Turret("blue", x, y, team);
+    var newTurret;
 
     if(player.funds >= 300)    //if the funds are above 300 then do the following
     {
 
-        var newTurret = new Turret("blue", x, y);
+        newTurret = new Turret(team, x, y);
 
         player.funds -= 300;
         scoreText.text = "Funds: " + player.funds + " Cts";

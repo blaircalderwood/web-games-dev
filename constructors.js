@@ -1,10 +1,7 @@
 var Player = function (team) {
 
-    this.soldierPool = new SoldierPool(team);
-
     this.explosionPool = new ExplosionPool();
 
-    this.turrets = new TurretPool(team);
     this.funds = 1000;
     this.health = 100;
     this.team = team;
@@ -13,25 +10,40 @@ var Player = function (team) {
 
 var Soldier = function (x, y, team) {
 
-    if (player.soldierPool.countDead() > 0) {
+    var newSoldier;
 
-        var newSoldier = player.soldierPool.getFirstExists(false);
+    function posAndPath(targetX, targetY) {
 
         newSoldier.reset(x, y);
 
-        console.log(team);
-        if(team == "blue"){
-            newSoldier.path = findPath([Math.floor(newSoldier.x / tileWidth), Math.floor(newSoldier.y / tileHeight)], [10, 2]);
-            console.log("Blue Path: " + newSoldier.path);
-        }
-        else{
-            newSoldier.path = findPath([Math.floor(newSoldier.x / tileWidth), Math.floor(newSoldier.y / tileHeight)], [0, 2]);
-            console.log("Red Path: " + newSoldier.path);
-        }
+        newSoldier.path = findPath([Math.floor(newSoldier.x / tileWidth), Math.floor(newSoldier.y / tileHeight)], [targetX, targetY]);
+        console.log(newSoldier.path);
 
         newSoldier.pointer = 0;
 
-        console.log(newSoldier);
+    }
+
+    if (team == "blue") {
+
+        if (blueSoldierPool.countDead() > 0) {
+
+            newSoldier = blueSoldierPool.getFirstExists(false);
+
+            posAndPath(10, 2);
+
+        }
+
+    }
+
+    else {
+
+        if (redSoldierPool.countDead() > 0) {
+
+            newSoldier = redSoldierPool.getFirstExists(false);
+            posAndPath(0, 2);
+            console.log(newSoldier);
+
+        }
 
     }
 
@@ -43,8 +55,11 @@ var Turret = function (team, x, y) {
 
     var newTurret;
 
-    if (team == "blue")newTurret = player.turrets.create(x, y, 'blueTurret');
-    else newTurret = player.turrets.create(x, y, 'redTurret');
+    if (team == "blue") newTurret = blueTurretPool.getFirstExists(false);
+
+    else newTurret = redTurretPool.getFirstExists(false);
+
+    newTurret.reset(x, y);
 
     newTurret.nextFire = 0;
 
@@ -98,12 +113,12 @@ fireBullet = function (turret, target, angle) {
 
 };
 
-rotate = function(turret, target){
+rotate = function (turret, target) {
 
     var totalRotation = game.physics.arcade.angleBetween(turret, target) - turret.rotation;
 
-    if(totalRotation <= - turret.speed)turret.rotation -= turret.speed;
-    else if(totalRotation >= turret.speed)turret.rotation += turret.speed;
+    if (totalRotation <= -turret.speed)turret.rotation -= turret.speed;
+    else if (totalRotation >= turret.speed)turret.rotation += turret.speed;
 
     fireBullet(turret, target, turret.rotation);
 
@@ -158,10 +173,10 @@ var SoldierPool = function (team) {
     soldiers.enableBody = true;
     soldiers.physicsBodyType = Phaser.Physics.ARCADE;
 
-    if(team == "blue") {
+    if (team == "blue") {
         soldiers.createMultiple(30, 'player', 0, false);
     }
-    else{
+    else {
         soldiers.createMultiple(30, 'player2', 0, false);
     }
 
@@ -175,7 +190,7 @@ var SoldierPool = function (team) {
 };
 
 
-var ExplosionPool = function(){
+var ExplosionPool = function () {
 
     var explosions = game.add.group();
     explosions.enableBody = true;
