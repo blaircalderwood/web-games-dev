@@ -139,11 +139,9 @@ function forEachSoldier(targetFunction){
 function forEachTurret(targetFunction){
 
     redTurretPool.forEach(function (targetVar) {
-        targetVar.team = "red";
         targetFunction(targetVar);
     });
     blueTurretPool.forEach(function (targetVar) {
-        targetVar.team = "blue";
         targetFunction(targetVar);
     });
 
@@ -180,31 +178,31 @@ function updateListener(update) {
 
 function collisionHandler(bullet, soldier) {
 
-    console.log(soldier);
+    if(bullet.team !== soldier.team) {
 
-    bullet.kill();
+        bullet.kill();
 
-    soldier.kill();
+        soldier.kill();
 
-    var explosion = player.explosionPool.getFirstExists(false);
-    explosion.reset(soldier.body.x, soldier.body.y);
-
-
-    player.explosionPool.forEach(function (explosion)
-    {
-        explosion.animations.add('explode');
-        explosion.animations.play('explode', 15, false, true);
-    });
+        var explosion = player.explosionPool.getFirstExists(false);
+        explosion.reset(soldier.body.x, soldier.body.y);
 
 
-    player.funds += 20;
-    scoreText.text = "Funds: " + player.funds;
+        player.explosionPool.forEach(function (explosion) {
+            explosion.animations.add('explode');
+            explosion.animations.play('explode', 15, false, true);
+        });
 
-    forEachSoldier(function (soldier)
-    {
-        soldier.animations.add('walk');
-        soldier.animations.play('walk', 5, true);
-    });
+
+        player.funds += 20;
+        scoreText.text = "Funds: " + player.funds;
+
+        forEachSoldier(function (soldier) {
+            soldier.animations.add('walk');
+            soldier.animations.play('walk', 5, true);
+        });
+
+    }
 }
 
 

@@ -47,6 +47,8 @@ var Soldier = function (x, y, team) {
 
     }
 
+    newSoldier.team = team;
+
     return newSoldier;
 
 };
@@ -69,6 +71,8 @@ var Turret = function (team, x, y) {
     newTurret.speed = 0.01;
 
     newTurret.anchor.setTo(0.3, 0.5);
+
+    newTurret.team = team;
 
     return newTurret;
 
@@ -137,7 +141,7 @@ var BulletPool = function (team) {
         bullets.createMultiple(30, 'redBullet', 0, false);
     }
 
-
+    bullets.setAll('team', team);
     bullets.setAll('anchor.x', 0.5);
     bullets.setAll('anchor.y', 0.5);
     bullets.setAll('outOfBoundsKill', true);
