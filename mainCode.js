@@ -2,7 +2,7 @@ var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, sco
 
 var playerSpawnTimer = 0;
 
-var health, healthBarBlue, barBackground, healthBarRed, barBackground2;
+var health, healthBarBlue, barBackground, healthBarRed, barBackground2, buttonGroup;
 
 var gridCoords = [
     [3, 3, 3, 3, 3],
@@ -52,13 +52,26 @@ function preload() {
     game.load.image('healthBarBlue', 'assets/healthBar.png');
     game.load.image('healthBarRed', 'assets/healthBar2.png');
     game.load.image('healthBarBackground', 'assets/healthBarBackground.png');
+
+    game.load.image('playButtonOut', 'assets/playButton.png');
+    game.load.image('playButtonOver', 'assets/playButtonGo.png');
 }
 
 function create() {
 
     tiles = game.add.group();
 
-    createMap();
+    buttonGroup = game.add.group();
+
+    var button = game.make.button(game.world.centerX - 232, game.world.centerY - 96, 'playButtonOut', removeGroup, this, 2, 1, 0);
+
+    button.onInputOver.add(over, this);
+    button.onInputOut.add(out, this);
+
+    buttonGroup.add(button);
+
+
+    //createMap();
 
     barBackground = game.add.sprite(0, 0, 'healthBarBackground');
     healthBarBlue = game.add.sprite(0, 0,'healthBarBlue');
@@ -70,9 +83,38 @@ function create() {
     //setPlayerTeams();
 
 
+}
 
+function removeGroup() {
+
+    game.world.remove(buttonGroup);
+
+    buttonGroup.destroy();
+
+    actionOnClick();
 
 }
+
+
+
+function over() {
+    console.log('button over');
+}
+
+function out() {
+
+
+    console.log('button out');
+}
+
+function actionOnClick () {
+
+    console.log('button clicked');
+    createMap();
+
+}
+
+
 
 function setPlayerTeams(playerTeam){
 
