@@ -31,9 +31,9 @@ var Soldier = function (x, y, team) {
 
     if (team == "blue") {
 
-        if (blueSoldierPool.countDead() > 0) {
+        if (blue.soldierPool.countDead() > 0) {
 
-            newSoldier = blueSoldierPool.getFirstExists(false);
+            newSoldier = blue.soldierPool.getFirstExists(false);
 
             posAndPath(10, 2);
 
@@ -43,9 +43,9 @@ var Soldier = function (x, y, team) {
 
     else {
 
-        if (redSoldierPool.countDead() > 0) {
+        if (red.soldierPool.countDead() > 0) {
 
-            newSoldier = redSoldierPool.getFirstExists(false);
+            newSoldier = red.soldierPool.getFirstExists(false);
             posAndPath(0, 2);
             console.log(newSoldier);
 
@@ -63,9 +63,9 @@ var Turret = function (team, x, y) {
 
     var newTurret;
 
-    if (team == "blue") newTurret = blueTurretPool.getFirstExists(false);
+    if (team == "blue") newTurret = blue.turretPool.getFirstExists(false);
 
-    else newTurret = redTurretPool.getFirstExists(false);
+    else newTurret = red.turretPool.getFirstExists(false);
 
     newTurret.reset(x, y);
 

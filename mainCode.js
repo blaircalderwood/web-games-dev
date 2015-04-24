@@ -1,9 +1,6 @@
-var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, redSoldierPool,
-    blueSoldierPool, redTurretPool, blueTurretPool, serverTimer, game;
+var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, serverTimer, game, buttonGroup, barBackground, barBackground2, healthBarBlue, healthBarRed;
 
-var playerSpawnTimer = 0;
-
-var health, healthBarBlue, barBackground, healthBarRed, barBackground2, buttonGroup;
+var red = {}, blue = {};
 
 var gridCoords = [
     [3, 3, 3, 3, 3],
@@ -27,7 +24,7 @@ var tileImages = [
     {key: "neutralTile", src: "assets/pathLightTileTurnip.png"}
 ];
 
-function startGame(){
+function startGame() {
 
     game = new Phaser.Game(1100, 500, Phaser.AUTO, '', {preload: preload, create: create, update: update});
 
@@ -65,6 +62,7 @@ function create() {
     buttonGroup = game.add.group();
 
     setPlayerTeams();
+
     var button = game.make.button(game.world.centerX - 232, game.world.centerY - 96, 'playButtonOut', removeGroup, this, 2, 1, 0);
 
     button.onInputOver.add(over, this);
@@ -76,10 +74,10 @@ function create() {
     //createMap();
 
     barBackground = game.add.sprite(0, 0, 'healthBarBackground');
-    healthBarBlue = game.add.sprite(0, 0,'healthBarBlue');
+    healthBarBlue = game.add.sprite(0, 0, 'healthBarBlue');
 
     barBackground2 = game.add.sprite(game.world.width - 20, 0, 'healthBarBackground');
-    healthBarRed = game.add.sprite(game.world.width - 20, 0,'healthBarRed');
+    healthBarRed = game.add.sprite(game.world.width - 20, 0, 'healthBarRed');
 
     getAjax("https://webgamesdev-blaircalderwood.c9.io/newGame", setPlayerTeams);
     //setPlayerTeams();
@@ -87,7 +85,6 @@ function create() {
 
 }
 
-function setPlayerTeams(){
 function removeGroup() {
 
     game.world.remove(buttonGroup);
@@ -97,7 +94,6 @@ function removeGroup() {
     actionOnClick();
 
 }
-
 
 
 function over() {
@@ -110,7 +106,7 @@ function out() {
     console.log('button out');
 }
 
-function actionOnClick () {
+function actionOnClick() {
 
     console.log('button clicked');
     createMap();
@@ -118,32 +114,29 @@ function actionOnClick () {
 }
 
 
-
-function setPlayerTeams(playerTeam){
+function setPlayerTeams(playerTeam) {
 
     function animateSoldiers(soldier) {
         soldier.animations.add('walk');
         soldier.animations.play('walk', 5, true);
     }
 
-    redSoldierPool = new SoldierPool("red");
-    blueSoldierPool = new SoldierPool("blue");
-    redTurretPool = new TurretPool("red");
-    blueTurretPool = new TurretPool("blue");
+    red.soldierPool = new SoldierPool("red");
+    blue.soldierPool = new SoldierPool("blue");
+    red.turretPool = new TurretPool("red");
+    blue.turretPool = new TurretPool("blue");
 
     player = new Player(playerTeam);
 
     console.log(playerTeam);
 
-    if(playerTeam == "red")enemy = new Player("blue");
+    if (playerTeam == "red")enemy = new Player("blue");
     else enemy = new Player("red");
 
-    redSoldierPool.forEach(function (soldier)
-    {
+    red.soldierPool.forEach(function (soldier) {
         animateSoldiers(soldier);
     });
-    blueSoldierPool.forEach(function (soldier)
-    {
+    blue.soldierPool.forEach(function (soldier) {
         animateSoldiers(soldier);
     });
 
@@ -155,27 +148,19 @@ function setPlayerTeams(playerTeam){
 
 function update() {
 
-    if(player) {
+    if (player) {
 
         moveSoldiers();
         moveTurrets();
 
         forEachTurret(function (turret) {
 
-            game.physics.arcade.overlap(turret.bullets, redSoldierPool, collisionHandler, null, this);
-            game.physics.arcade.overlap(turret.bullets, blueSoldierPool, collisionHandler, null, this);
+            game.physics.arcade.overlap(turret.bullets, red.soldierPool, collisionHandler, null, this);
+            game.physics.arcade.overlap(turret.bullets, blue.soldierPool, collisionHandler, null, this);
 
         });
 
-        /*redSoldierPool.forEach(function (soldier) {
-            soldier.bringToTop();
-        });
-        
-        blueSoldierPool.forEach(function (soldier) {
-            soldier.bringToTop();
-        });*/
-        
-        forEachSoldier(function(soldier){
+        forEachSoldier(function (soldier) {
             soldier.bringToTop();
         })
 
@@ -183,25 +168,25 @@ function update() {
 
 }
 
-function forEachSoldier(targetFunction){
+function forEachSoldier(targetFunction) {
 
-    redSoldierPool.forEach(function (targetVar) {
+    red.soldierPool.forEach(function (targetVar) {
         targetVar.team = "red";
         targetFunction(targetVar);
     });
-    blueSoldierPool.forEach(function (targetVar) {
+    blue.soldierPool.forEach(function (targetVar) {
         targetVar.team = "blue";
         targetFunction(targetVar);
     });
 
 }
 
-function forEachTurret(targetFunction){
+function forEachTurret(targetFunction) {
 
-    redTurretPool.forEach(function (targetVar) {
+    red.turretPool.forEach(function (targetVar) {
         targetFunction(targetVar);
     });
-    blueTurretPool.forEach(function (targetVar) {
+    blue.turretPool.forEach(function (targetVar) {
         targetFunction(targetVar);
     });
 
@@ -217,7 +202,13 @@ function startTimer() {
 
 function updateListener(update) {
 
-    if(update !== "Connection Problem") {
+    if (update == "Player Dead")console.log("Player is dead");
+
+    else if (update == "Partner Disconnected") {
+        console.log(update);
+    }
+
+    else if (update !== "Connection Problem") {
 
         var team = JSON.parse(update);
 
@@ -238,7 +229,7 @@ function updateListener(update) {
 
 function collisionHandler(bullet, soldier) {
 
-    if(bullet.team !== soldier.team) {
+    if (bullet.team !== soldier.team) {
 
         bullet.kill();
 
@@ -310,6 +301,9 @@ function goalReached(soldier) {
     soldier.kill();
     enemy.health -= 10;
     updateEnemyHealth();
+    if (soldier.team == enemy.team) {
+        getAjax("https://webgamesdev-blaircalderwood.c9.io/playerDead?name=" + playerName, playerDead);
+    }
 
     function setHealthBar(targetPlayer) {
         if (targetPlayer.healthBar.height >= 50) {
@@ -321,12 +315,10 @@ function goalReached(soldier) {
         }
     }
 
-    if(soldier.team !== player.team)
-    {
+    if (soldier.team !== player.team) {
         setHealthBar(player);
     }
-    else
-    {
+    else {
         setHealthBar(enemy);
     }
 
@@ -335,6 +327,13 @@ function goalReached(soldier) {
 
 function updateEnemyHealth() {
 
+    //enemy.healthText.text = "Enemy health: " + enemy.health;
+
+}
+
+function playerDead(data) {
+
+    console.log(data);
     enemy.healthText.text = "Enemy health: " + enemy.health;
 
 }
@@ -445,15 +444,15 @@ function createText() {
 
 }
 
-function isInOwnHalf(xCoord){
-  return ((xCoord < (game.width / 2) && player.team == "blue") || (xCoord > (game.width / 2) && player.team == "red"))
+function isInOwnHalf(xCoord) {
+    return ((xCoord < (game.width / 2) && player.team == "blue") || (xCoord > (game.width / 2) && player.team == "red"))
 }
 
 function newSoldier(listener, pointer) {
 
     var targetTile = getTargetTile(pointer);
 
-    if(isInOwnHalf(targetTile.x)) {
+    if (isInOwnHalf(targetTile.x)) {
         //spawnPlayerOnObject(targetTile.x, targetTile.y);
         console.log("Player placed");
         getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?name=" + playerName + "&team=" + player.team + "&type=soldier&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y), itemPlaced);
@@ -461,7 +460,7 @@ function newSoldier(listener, pointer) {
 
 }
 
-function itemPlaced(data){
+function itemPlaced(data) {
     console.log(data);
 }
 
@@ -484,7 +483,7 @@ function newTurret(listener, pointer) {
 
     var targetTile = getTargetTile(pointer);
 
-    if(isInOwnHalf(targetTile.x)) {
+    if (isInOwnHalf(targetTile.x)) {
         //spawnTurretOnObject(targetTile.x, targetTile.y);
         getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?name=" + playerName + "&team=" + player.team + "&type=turret&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y), itemPlaced);
     }
@@ -493,7 +492,7 @@ function newTurret(listener, pointer) {
 
 function spawnPlayerOnObject(x, y, team) {
 
-    if(player.funds >= 50)    //if the funds are above 50 then do the following
+    if (player.funds >= 50)    //if the funds are above 50 then do the following
     {
 
         var newSoldier = new Soldier(x, y, team);
@@ -511,7 +510,7 @@ function spawnTurretOnObject(x, y, team) {
 
     var newTurret;
 
-    if(player.funds >= 300)    //if the funds are above 300 then do the following
+    if (player.funds >= 300)    //if the funds are above 300 then do the following
     {
 
         newTurret = new Turret(team, x, y);
@@ -521,7 +520,6 @@ function spawnTurretOnObject(x, y, team) {
     }
 
 }
-
 
 
 function getTargetTile(pointer) {

@@ -1,4 +1,4 @@
-var hostTimer, playerName, hostList;
+var hostTimer, playerName, hostList, playerTeam;
 
 function submitName(hosting) {
 
@@ -74,7 +74,7 @@ function hostWait(availability) {
 
 function playerJoined(data){
 
-    if(data == "Player Joined"){
+    if(data !== "false"){
 
         playerTeam = "blue";
         console.log(data);
