@@ -367,12 +367,10 @@ function newTurret(listener, pointer) {
 
 function spawnPlayerOnObject(x, y, team) {
 
-    var newSoldier = new Soldier(x, y, team);
-
     if(player.funds >= 50)    //if the funds are above 50 then do the following
     {
 
-        var newSoldier = new Soldier(x, y, "blue");
+        var newSoldier = new Soldier(x, y, team);
 
         newSoldier.bringToTop();
 

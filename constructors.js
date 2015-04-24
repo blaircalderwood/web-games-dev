@@ -21,12 +21,12 @@ var Soldier = function (x, y, team) {
 
         console.log(team);
         if(team == "blue"){
-            newSoldier.path = findPath([Math.floor(newSoldier.x / tileWidth), Math.floor(newSoldier.y / tileHeight)], [11, 3]);
-            console.log(newSoldier.path);
+            newSoldier.path = findPath([Math.floor(newSoldier.x / tileWidth), Math.floor(newSoldier.y / tileHeight)], [10, 2]);
+            console.log("Blue Path: " + newSoldier.path);
         }
         else{
-            newSoldier.path = findPath([Math.floor(newSoldier.x / tileWidth), Math.floor(newSoldier.y / tileHeight)], [0, 3]);
-            console.log(newSoldier.path);
+            newSoldier.path = findPath([Math.floor(newSoldier.x / tileWidth), Math.floor(newSoldier.y / tileHeight)], [0, 2]);
+            console.log("Red Path: " + newSoldier.path);
         }
 
         newSoldier.pointer = 0;
