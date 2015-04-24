@@ -4,10 +4,10 @@ var currentPath = [];
 
 window.onload = function(){
 
-    currentPath = findPath([0, 0], [4, 0]);
 
 };
 
+//TO DO: Insert tutorial link
 findPath = function (pathStart, pathEnd) {
 
     var pow = Math.pow;
