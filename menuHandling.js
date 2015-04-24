@@ -11,6 +11,7 @@ function submitName(hosting) {
 
 function checkName(availability) {
 
+    $("#playerList").html("");
     var newHTML = "";
 
     if (availability !== "false") {
@@ -20,11 +21,11 @@ function checkName(availability) {
         console.log(availability);
         hostList = availability;
 
-        newHTML = "<ul>";
+        newHTML = "<ul style='list-style-type: none'>";
         for (var i = 0; i < availability.length; i++) {
 
             console.log(availability[i]);
-            newHTML += "<li><a data-index='" + i + "' onclick='selectHost(this)'>" + availability[i] + "</a></li>";
+            newHTML += "<li><button class='hostList' data-index='" + i + "' onclick='selectHost(this)'>" + availability[i] + "</button></li>";
 
         }
 
@@ -53,7 +54,7 @@ function playGame(data){
 
     playerTeam = "red";
     console.log(JSON.parse(data));
-    startGame();
+    actionOnClick();
 
 }
 
@@ -80,7 +81,7 @@ function playerJoined(data){
         console.log(data);
         clearInterval(hostTimer);
 
-        startGame();
+        actionOnClick();
 
     }
 

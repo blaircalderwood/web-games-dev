@@ -3,7 +3,7 @@ var Player = function (team) {
     this.explosionPool = new ExplosionPool();
 
     this.funds = 1000;
-    this.health = 100;
+    this.health = 500;
     this.team = team;
 
     if(team == "blue")
