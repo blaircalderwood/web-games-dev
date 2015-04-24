@@ -1,5 +1,5 @@
 var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, serverTimer, game, barBackground, barBackground2, healthBarBlue, healthBarRed;
-var starterMenu, instrPage, instrButtonGroup, instrPageOpenBool, buttonGroup;
+var starterMenu, instrPage, instrButtonGroup, instrPageOpenBool, buttonGroup, serverBackground;
 var red = {}, blue = {};
 game = new Phaser.Game(1100, 500, Phaser.AUTO, '', {preload: preload, create: create, update: update});
 var gridCoords = [
@@ -53,6 +53,8 @@ function preload() {
     game.load.image('backButtonOut', 'assets/backButton.png');
     game.load.image('startMenu', 'assets/starterPage.png');
 
+    game.load.image('serverBackground', 'assets/serverBackground.jpg');
+
 }
 
 function create() {
@@ -60,10 +62,6 @@ function create() {
     $("#hostSettings").hide();
 
     createButtons();
-
-    //createMap();
-
-    //setPlayerTeams(playerTeam);
 
 }
 
@@ -88,7 +86,7 @@ function out() {
 
 function actionOnClick() {
 
-    console.log('button clicked');
+    game.world.remove(serverBackground);
 
     $("#hostSettings").hide();
     $("#playerList").hide();
@@ -167,6 +165,7 @@ function update() {
 function playAction() {
 
     $("#hostSettings").show();
+    serverBackground = game.add.sprite(0, 0, 'serverBackground');
     console.log('button clicked');
     tiles = game.add.group();
 
@@ -442,9 +441,6 @@ function createText() {
     var style = {font: "30px Arial", fill: "#FFFFFF", align: "center"};
     scoreText = game.add.text(game.world.centerX, game.world.centerY / 8, "Funds: " + player.funds + " Cts", style);
     scoreText.anchor.set(0.5);
-
-    enemy.healthText = game.add.text(game.world.width / 3, game.world.height / 2, "Enemy Health: " + enemy.health, style);
-
 
     scoreTimer = setInterval(function () {
         player.funds += 100;
