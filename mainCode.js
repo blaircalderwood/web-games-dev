@@ -1,4 +1,4 @@
-var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, serverTimer, game, buttonGroup, barBackground, barBackground2, healthBarBlue, healthBarRed;
+var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, serverTimer, game, buttonGroup, barBackground, barBackground2, healthBarBlue, healthBarRed, starterMenu, instrPage, instrButtonGroup, instrPageOpenBool;
 
 var red = {}, blue = {};
 
@@ -27,6 +27,7 @@ var tileImages = [
 function startGame() {
 
     game = new Phaser.Game(1100, 500, Phaser.AUTO, '', {preload: preload, create: create, update: update});
+    instrPageOpenBool = false;
 
 }
 
@@ -53,65 +54,171 @@ function preload() {
 
     game.load.image('playButtonOut', 'assets/playButton.png');
     game.load.image('playButtonOver', 'assets/playButtonGo.png');
+
+    game.load.image('instructionButtonOut', 'assets/instructionButton.png');
+    game.load.image('instructionButtonOver', 'assets/instructionButtonGo.png');
+
+    game.load.image('backButtonOut', 'assets/backButton.png');
+
+    game.load.image('startMenu', 'assets/starterPage.png');
+    game.load.image('instructionPage', 'assets/turnipInstructions.png');
 }
 
 function create() {
 
-    tiles = game.add.group();
+    //tiles = game.add.group();
 
+    starterMenu = game.add.sprite(0, 0, 'startMenu');
     buttonGroup = game.add.group();
 
-    setPlayerTeams();
 
-    var button = game.make.button(game.world.centerX - 232, game.world.centerY - 96, 'playButtonOut', removeGroup, this, 2, 1, 0);
+    var playButton = game.make.button(200, 175, 'playButtonOut', playPressed, this, 2, 1, 0);
+    playButton.width = 328;
+    playButton.height = 124;
 
-    button.onInputOver.add(over, this);
-    button.onInputOut.add(out, this);
+    var instructionButton = game.make.button(200, 325, 'instructionButtonOut', instrPressed, this, 2, 1, 0);
+    instructionButton.width = 328;
+    instructionButton.height = 124;
 
-    buttonGroup.add(button);
+    playButton.onInputOver.add(overPlay, this);
+    playButton.onInputOut.add(outPlay, this);
+
+    instructionButton.onInputOver.add(overInstr, this);
+    instructionButton.onInputOut.add(outInstr, this);
+
+    buttonGroup.add(playButton);
+    //buttonGroup.add(backButton);
+    buttonGroup.add(instructionButton);
 
 
     //createMap();
 
-    barBackground = game.add.sprite(0, 0, 'healthBarBackground');
-    healthBarBlue = game.add.sprite(0, 0, 'healthBarBlue');
 
-    barBackground2 = game.add.sprite(game.world.width - 20, 0, 'healthBarBackground');
-    healthBarRed = game.add.sprite(game.world.width - 20, 0, 'healthBarRed');
+}
 
-    getAjax("https://webgamesdev-blaircalderwood.c9.io/newGame", setPlayerTeams);
-    //setPlayerTeams();
+function playPressed() {
+
+    if(instrPageOpenBool == false)
+    {
+
+        game.world.remove(buttonGroup);
+
+        buttonGroup.destroy();
+        starterMenu.destroy();
+        //instrPage.destroy();
+        //instrButtonGroup.destroy();
+
+        playAction();
+
+    }
+
+}
+
+function instrPressed() {
+
+    if(instrPageOpenBool == false)
+    {
+        instrAction();
+    }
+
+}
+
+
+function backPressed() {
+
+    backAction();
+
+}
+
+
+
+
+function overPlay() {
+    console.log('button over play');
+}
+
+function outPlay() {
+    console.log('button out play');
+}
+
+function overInstr() {
+    console.log('button over instr');
+}
+
+function outInstr() {
+    console.log('button out instr');
+}
+
+function overBack() {
+    console.log('button over back');
+}
+
+function outBack() {
+    console.log('button out back');
+}
+
+
+
+
+function playAction() {
+
+     console.log('button clicked');
+     tiles = game.add.group();
+     createMap();
+
+     barBackground = game.add.sprite(0, 0, 'healthBarBackground');
+     healthBarBlue = game.add.sprite(0, 0, 'healthBarBlue');
+
+     barBackground2 = game.add.sprite(game.world.width - 20, 0, 'healthBarBackground');
+     healthBarRed = game.add.sprite(game.world.width - 20, 0, 'healthBarRed');
+
+
+     setPlayerTeams(playerTeam);
+
+}
+
+
+function instrAction()
+{
+    instrPageOpenBool = true;
+
+    instrPage = game.add.sprite(0, 0, 'instructionPage');
+
+    instrButtonGroup = game.add.group();
+
+    //instrPage = game.add.sprite(0, 0, 'instructionPage');
+
+    var backButton = game.make.button(game.world.width - 210, game.world.height - 64, 'backButtonOut', backPressed, this, 2, 1, 0);
+    backButton.width = 200;
+    backButton.height = 54;
+
+    backButton.onInputOver.add(overBack, this);
+    backButton.onInputOut.add(outBack, this);
+
+    instrButtonGroup.add(backButton);
+
+    instrPage.bringToTop();
+    game.world.bringToTop(instrButtonGroup);    //bring groups to top
+    //backButton.bringToTop();
+
+   // game.world.remove(starterMenu);
+
 
 
 }
 
-function removeGroup() {
-
-    game.world.remove(buttonGroup);
-
-    buttonGroup.destroy();
-
-    actionOnClick();
-
-}
 
 
-function over() {
-    console.log('button over');
-}
-
-function out() {
-
-
-    console.log('button out');
-}
-
-function actionOnClick() {
-
-    console.log('button clicked');
-    createMap();
+function backAction()
+{
+    instrPageOpenBool = false;
+    game.world.remove(instrPage);
+    game.world.sendToBack(instrButtonGroup);
 
 }
+
+
+
 
 
 function setPlayerTeams(playerTeam) {
