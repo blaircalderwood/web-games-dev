@@ -27,7 +27,6 @@ var tileImages = [
 function startGame() {
 
 
-
 }
 
 function preload() {
@@ -72,12 +71,6 @@ function create() {
 
     //createMap();
 
-    barBackground = game.add.sprite(0, 0, 'healthBarBackground');
-    healthBarBlue = game.add.sprite(0, 0, 'healthBarBlue');
-
-    barBackground2 = game.add.sprite(game.world.width - 20, 0, 'healthBarBackground');
-    healthBarRed = game.add.sprite(game.world.width - 20, 0, 'healthBarRed');
-
     //setPlayerTeams(playerTeam);
 
 }
@@ -110,7 +103,10 @@ function actionOnClick() {
     $("#hostSettings").hide();
     $("#playerList").hide();
     createMap();
+
+    createHealthBars();
     setPlayerTeams(playerTeam);
+
 
 }
 
@@ -143,6 +139,16 @@ function setPlayerTeams(playerTeam) {
     createText();
 
     startTimer();
+
+}
+
+function createHealthBars() {
+
+    barBackground = game.add.sprite(0, 0, 'healthBarBackground');
+    healthBarBlue = game.add.sprite(0, 0, 'healthBarBlue');
+
+    barBackground2 = game.add.sprite(game.world.width - 20, 0, 'healthBarBackground');
+    healthBarRed = game.add.sprite(game.world.width - 20, 0, 'healthBarRed');
 
 }
 
@@ -202,9 +208,7 @@ function startTimer() {
 
 function updateListener(update) {
 
-    if (JSON.parse(update) == "Player Dead")console.log("Player is dead");
-
-    else if (update == "Partner Disconnected") {
+    if (update == "Partner Disconnected") {
         console.log(update);
     }
 
@@ -213,6 +217,8 @@ function updateListener(update) {
         var team = JSON.parse(update);
 
         for (var i = 0; i < team.length; i++) {
+
+            if(team[i] == "Player Dead")gameOver("The enemy is dead. You have won!");
 
             if (team[i].type == "soldier") {
                 spawnPlayerOnObject(team[i].x, team[i].y, team[i].team);
@@ -330,7 +336,15 @@ function playerDead(data) {
 
 }
 
-function gameOver(text){
+function gameOver(text) {
+
+    console.log(text);
+    clearInterval(serverTimer);
+
+    getAjax("https://webgamesdev-blaircalderwood.c9.io/deadNotified?name=" + playerName, showMenuButtons)
+}
+
+function showMenuButtons(){
 
 
 }
