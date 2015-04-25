@@ -1,11 +1,4 @@
-var canvas, context;
 
-var currentPath = [];
-
-window.onload = function(){
-
-
-};
 
 //TO DO: Insert tutorial link
 findPath = function (pathStart, pathEnd) {

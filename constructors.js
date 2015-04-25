@@ -1,11 +1,19 @@
+/** Create a new player or enemy object.
+ *
+ * @param team - Team colour
+ * @constructor
+ */
 var Player = function (team) {
 
+    //Create a new pool of explosion animations to use on soldier death
     this.explosionPool = new ExplosionPool();
 
+    //Set up player variables
     this.funds = 1000;
     this.health = 500;
     this.team = team;
 
+    //Assign the relevant health bar to the player
     if(team == "blue")
     {
         this.healthBar = healthBarBlue;
@@ -14,14 +22,31 @@ var Player = function (team) {
 
 };
 
+/** Create a new soldier.
+ *
+ * @param x - X coordinate of tile to create soldier in.
+ * @param y - Y coordinate of tile to create soldier in.
+ * @param team - Team colour of soldier.
+ * @returns {*} - New soldier object.
+ * @constructor
+ */
+
 var Soldier = function (x, y, team) {
 
     var newSoldier;
 
+    /** Create a path for the player to follow towards the enemy base using a*.
+     *
+     * @param targetX - X coordinate of enemy base.
+     * @param targetY - Y coordinate of enemy base.
+     */
+
     function posAndPath(targetX, targetY) {
 
+        //Move the new soldier to the clicked tile
         newSoldier.reset(x, y);
 
+        //Find a new path towards the enemy base using a*
         newSoldier.path = findPath([Math.floor(newSoldier.x / tileWidth), Math.floor(newSoldier.y / tileHeight)], [targetX, targetY]);
         console.log(newSoldier.path);
 
@@ -29,6 +54,7 @@ var Soldier = function (x, y, team) {
 
     }
 
+    //If the soldier is in the blue team move towards the red base
     if (team == "blue") {
 
         if (blue.soldierPool.countDead() > 0) {
@@ -41,6 +67,7 @@ var Soldier = function (x, y, team) {
 
     }
 
+    //If the soldier is in the red team move towards the blue base
     else {
 
         if (red.soldierPool.countDead() > 0) {
@@ -59,6 +86,14 @@ var Soldier = function (x, y, team) {
 
 };
 
+/** Create a new turret.
+ * 
+ * @param team - Team colour of soldier.
+ * @param x - X coordinate of tile to create turret in.
+ * @param y - Y coordinate of tile to create turret in.
+ * @returns {*} - New turret.
+ * @constructor
+ */
 var Turret = function (team, x, y) {
 
     var newTurret;
@@ -67,8 +102,10 @@ var Turret = function (team, x, y) {
 
     else newTurret = red.turretPool.getFirstExists(false);
 
+    //Set position of turret to clicked tile
     newTurret.reset(x, y);
 
+    //Set up turret variables
     newTurret.nextFire = 0;
 
     newTurret.bullets = new BulletPool(team);
@@ -84,69 +121,25 @@ var Turret = function (team, x, y) {
 
 };
 
-fire = function (turret, target) {
-
-    if (game.time.now > turret.nextFire && turret.bullets.countDead() > 0) {
-
-        turret.nextFire = game.time.now + turret.fireRate;
-
-        var bullet = turret.bullets.getFirstExists(false);
-
-        bullet.reset(turret.x, turret.y);
-
-        bullet.rotation = game.physics.arcade.moveToObject(bullet, target, 500);
-
-        turret.bringToTop();
-
-    }
-
-};
-
-fireBullet = function (turret, target, angle) {
-
-    if (game.time.now > turret.nextFire && turret.bullets.countDead() > 0) {
-
-        turret.nextFire = game.time.now + turret.fireRate;
-
-        var bullet = turret.bullets.getFirstExists(false);
-
-        bullet.reset(turret.x, turret.y);
-
-        bullet.rotation = angle;
-
-        var cosAngle = (Math.cos(angle) * 10) + turret.x;
-        var sinAngle = (Math.sin(angle) * 10) + turret.y;
-
-        game.physics.arcade.moveToXY(bullet, cosAngle, sinAngle, 500);
-
-    }
-
-};
-
-rotate = function (turret, target) {
-
-    var totalRotation = game.physics.arcade.angleBetween(turret, target) - turret.rotation;
-
-    if (totalRotation <= -turret.speed)turret.rotation -= turret.speed;
-    else if (totalRotation >= turret.speed)turret.rotation += turret.speed;
-
-    fireBullet(turret, target, turret.rotation);
-
-};
-
-
+/** Create a new pool of bullets for turrets to fire.
+ * 
+ * @param team - Team colour of bullet pool.
+ * @returns {*} - New bullet pool.
+ * @constructor
+ */
+    
 var BulletPool = function (team) {
 
-    var bullets = game.add.group();
-    bullets.enableBody = true;
-    bullets.physicsBodyType = Phaser.Physics.ARCADE;
+    var bullets = setUpPool();
 
+    //Create a pool of bullets in the correct colour
     if (team == "blue") {
         bullets.createMultiple(30, 'blueBullet', 0, false);
     } else {
         bullets.createMultiple(30, 'redBullet', 0, false);
     }
 
+    //Set variables for each bullet
     bullets.setAll('team', team);
     bullets.setAll('anchor.x', 0.5);
     bullets.setAll('anchor.y', 0.5);
@@ -157,19 +150,25 @@ var BulletPool = function (team) {
 
 };
 
+/** Create a new pool of turrets to spawn.
+ *
+ * @param team - Team colour of turret pool.
+ * @returns {*} - New turret pool.
+ * @constructor
+ */
+    
 var TurretPool = function (team) {
 
-    var turrets = game.add.group();
-    turrets.enableBody = true;
-    turrets.physicsBodyType = Phaser.Physics.ARCADE;
+    var turrets = setUpPool();
 
+    //Create a pool of turrets in the correct colour
     if (team == "blue") {
         turrets.createMultiple(5, 'blueTurret', 0, false);
     } else {
         turrets.createMultiple(5, 'redTurret', 0, false);
     }
 
-
+    //Set variables for each bullet
     turrets.setAll('anchor.x', 0.5);
     turrets.setAll('anchor.y', 0.5);
 
@@ -177,12 +176,18 @@ var TurretPool = function (team) {
 
 };
 
+/** Create a new pool of soldiers to spawn.
+ *
+ * @param team - Team colour of soldier pool.
+ * @returns {*} - New soldier pool.
+ * @constructor
+ */
+    
 var SoldierPool = function (team) {
 
-    var soldiers = game.add.group();
-    soldiers.enableBody = true;
-    soldiers.physicsBodyType = Phaser.Physics.ARCADE;
+    var soldiers = setUpPool();
 
+    //Create a pool of turrets in the correct colour
     if (team == "blue") {
         soldiers.createMultiple(30, 'player', 0, false);
     }
@@ -190,6 +195,7 @@ var SoldierPool = function (team) {
         soldiers.createMultiple(30, 'player2', 0, false);
     }
 
+    //Set variables for each bullet
     soldiers.setAll('anchor.x', 0.5);
     soldiers.setAll('anchor.y', 0.5);
     soldiers.setAll('outOfBoundsKill', true);
@@ -199,15 +205,31 @@ var SoldierPool = function (team) {
 
 };
 
+/** Create a new pool of explosions to spawn.
+ *
+ * @returns {*} - New explosion pool.
+ * @constructor
+ */
 
 var ExplosionPool = function () {
 
-    var explosions = game.add.group();
-    explosions.enableBody = true;
-    explosions.physicsBodyType = Phaser.Physics.ARCADE;
-
+    var explosions = setUpPool();
     explosions.createMultiple(30, 'kaboom', 0, false);
 
     return explosions;
 
+};
+
+/** Create a group and enable physics on pools of objects.
+ *
+ * @returns {*} - new object pool.
+ */
+
+function setUpPool() {
+    
+    var pool = game.add.group();
+    pool.enableBody = true;
+    pool.physicsBodyType = Phaser.Physics.ARCADE;
+    return pool;
+    
 }
