@@ -74,7 +74,7 @@ var Turret = function (team, x, y) {
     newTurret.bullets = new BulletPool(team);
 
     newTurret.fireRate = 2000;
-    newTurret.speed = 0.01;
+    newTurret.speed = 0.008;
 
     newTurret.anchor.setTo(0.3, 0.5);
 

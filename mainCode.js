@@ -117,10 +117,8 @@ function setPlayerTeams(playerTeam) {
     if (playerTeam == "red")enemy = new Player("blue");
     else enemy = new Player("red");
 
-    red.soldierPool.forEach(function (soldier) {
-        animateSoldiers(soldier);
-    });
-    blue.soldierPool.forEach(function (soldier) {
+    forEachSoldier(function(soldier){
+        soldier.speed = 80;
         animateSoldiers(soldier);
     });
 
@@ -271,7 +269,8 @@ function moveSoldiers() {
                 var pathX = path[soldier.pointer][0] * tileWidth + (tileWidth / 2);
                 var pathY = path[soldier.pointer][1] * tileHeight + (tileHeight / 2);
 
-                soldier.rotation = game.physics.arcade.moveToXY(soldier, pathX, pathY, 50);
+                console.log(soldier.speed);
+                soldier.rotation = game.physics.arcade.moveToXY(soldier, pathX, pathY, soldier.speed);
 
 
                 if (Math.round(soldier.x) == pathX && Math.round(soldier.y) == pathY) {
@@ -355,7 +354,7 @@ function moveTurrets() {
 
                 if (turret.alive) {
                     console.log(turret);
-                    if (game.physics.arcade.distanceBetween(turret, soldier) < 300 && turret.team !== soldier.team) {
+                    if (game.physics.arcade.distanceBetween(turret, soldier) < 250 && turret.team !== soldier.team) {
                         rotate(turret, soldier);
 
                     }
@@ -504,8 +503,10 @@ function spawnPlayerOnObject(x, y, team) {
 
         newSoldier.bringToTop();
 
-        player.funds -= 50;
-        scoreText.text = "Funds: " + player.funds + " Cts";
+        if(team == player.team) {
+            player.funds -= 50;
+            scoreText.text = "Funds: " + player.funds + " Cts";
+        }
     }
 
 }
@@ -520,8 +521,10 @@ function spawnTurretOnObject(x, y, team) {
 
         newTurret = new Turret(team, x, y);
 
-        player.funds -= 300;
-        scoreText.text = "Funds: " + player.funds + " Cts";
+        if(team == player.team) {
+            player.funds -= 700;
+            scoreText.text = "Funds: " + player.funds + " Cts";
+        }
     }
 
 }
