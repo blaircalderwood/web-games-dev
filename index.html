@@ -16,7 +16,6 @@
 </head>
 <body>
 
-
 <div id="hostSettings" style="position: absolute; top: 30px; left: 30px; z-index: 100; padding: 1%; margin: 1%;">
     <label for="nameInput" style="font-size: x-large; color: white"><b>Please insert your name</b></label>
     <input id="nameInput" type="text">
@@ -26,7 +25,12 @@
 </div>
 
 <div id="playerList" style="overflow-y: auto; max-height: 35%; width: 40%; position: absolute; top: 120px; left: 30px; padding: 0"></div>
+<div id="gameOverMessage">
+    <h1 id="gameOverText" style="color: red"></h1>
+    <a id="restartGame" class="hostButton" onclick="createButtons()">Restart Game</a>
+</div>
 
+<canvas id="gameCanvas" style="position: absolute; top: 0; left: 0;"></canvas>
 
 </body>
 </html>

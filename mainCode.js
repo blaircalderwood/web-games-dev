@@ -1,6 +1,7 @@
 var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, serverTimer, game, barBackground, barBackground2, healthBarBlue, healthBarRed;
 var starterMenu, instrPage, instrButtonGroup, instrPageOpenBool, buttonGroup, serverBackground;
 var red = {}, blue = {};
+
 game = new Phaser.Game(1100, 500, Phaser.AUTO, '', {preload: preload, create: create, update: update});
 var gridCoords = [
     [3, 3, 3, 3, 3],
@@ -58,8 +59,6 @@ function preload() {
 }
 
 function create() {
-
-    $("#hostSettings").hide();
 
     createButtons();
 
@@ -336,12 +335,20 @@ function gameOver(text) {
 
     console.log(text);
     clearInterval(serverTimer);
+    clearInterval(scoreTimer);
+
+    serverBackground = game.add.sprite(0, 0, 'serverBackground');
+    $("#gameOverMessage").show();
+    $("#gameOverText").html("<b>" + text + "</b>");
+
+    game.paused = true;
 
     getAjax("https://webgamesdev-blaircalderwood.c9.io/deadNotified?name=" + playerName, showMenuButtons)
 }
 
 function showMenuButtons(){
 
+    console.log("Menu Buttons shown");
 
 }
 
@@ -540,6 +547,9 @@ function getTargetTile(pointer) {
 
 function createButtons()
 {
+
+    $("#hostSettings").hide();
+    $("#gameOverMessage").hide();
 
     instrPageOpenBool = false;
 
