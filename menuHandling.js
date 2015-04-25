@@ -11,13 +11,17 @@ function submitName(hosting) {
 
 function checkName(availability) {
 
-    $("#playerList").html("");
+    var playerList = $("#playerList");
+    playerList.html("");
     var newHTML = "";
 
     if (availability !== "false") {
 
         availability = JSON.parse(availability);
 
+        if(availability.length == 0){
+            playerList.html("<h2 style='color: white;'><b>There are no games available. Please consider hosting one.</b></h2>");
+        }
         console.log(availability);
         hostList = availability;
 
@@ -30,12 +34,12 @@ function checkName(availability) {
         }
 
         newHTML += "</ul>";
-        $("#playerList").append(newHTML);
+        playerList.append(newHTML);
 
     }
 
     else {
-        console.log("Name Unavailable");
+        playerList.html("<h1 style='color: white;'><b>Name is unavailable. Please select another.</b></h1>");
     }
 
 }
@@ -60,9 +64,10 @@ function playGame(data){
 
 function hostWait(availability) {
 
-    console.log("Game created. Waiting for player to join");
-
+    var playerList = $("#playerList");
     if (availability !== "false") {
+
+        playerList.html("<h1 style='color: white;'><b>Game created. Waiting for player to join</b></h1>");
 
             hostTimer = setInterval(function () {
 
@@ -70,6 +75,7 @@ function hostWait(availability) {
 
             }, 500)
     }
+    else playerList.html("<h1 style='color: white;'><b>Name is unavailable. Please select another.</b></h1>");
 
 }
 

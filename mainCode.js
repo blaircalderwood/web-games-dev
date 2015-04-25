@@ -1,8 +1,7 @@
 var tiles, player, enemy = {}, tileWidth, tileHeight, blueTurret, redTurret, scoreText, scoreTimer, serverTimer, game, barBackground, barBackground2, healthBarBlue, healthBarRed;
-var starterMenu, instrPage, instrButtonGroup, instrPageOpenBool, buttonGroup, serverBackground;
+var starterMenu, instrPage, instrButtonGroup, instrPageOpenBool, buttonGroup, serverBackground, gameCanvas;
 var red = {}, blue = {};
 
-game = new Phaser.Game(1100, 500, Phaser.AUTO, '', {preload: preload, create: create, update: update});
 var gridCoords = [
     [3, 3, 3, 3, 3],
     [0, 0, 0, 0, 0],
@@ -58,9 +57,12 @@ function preload() {
 
 }
 
-function create() {
+function loadGame(){
 
-    createButtons();
+    $("#playerList").html("");
+    gameCanvas = $("#gameCanvas");
+    if(game)game.destroy();
+    game = new Phaser.Game(1100, 500, Phaser.AUTO, gameCanvas, {preload: preload, create: createButtons, update: update});
 
 }
 
@@ -162,6 +164,7 @@ function update() {
 function playAction() {
 
     $("#hostSettings").show();
+    $("#playerList").show();
     serverBackground = game.add.sprite(0, 0, 'serverBackground');
     console.log('button clicked');
     tiles = game.add.group();
@@ -212,9 +215,11 @@ function updateListener(update) {
 
         for (var i = 0; i < team.length; i++) {
 
-            if(team[i] == "Player Dead")gameOver("The enemy is dead. You have won!");
+            if(team[i] == "Blue Dead" && player.team !== "blue")gameOver("The enemy is dead. You have won!");
 
-            if (team[i].type == "soldier") {
+            else if(team[i] == "Red Dead" && player.team !== "red")gameOver("The enemy is dead. You have won!");
+
+            else if (team[i].type == "soldier") {
                 spawnPlayerOnObject(team[i].x, team[i].y, team[i].team);
             }
             else if (team[i].type == "turret") {
@@ -268,7 +273,6 @@ function moveSoldiers() {
                 var pathX = path[soldier.pointer][0] * tileWidth + (tileWidth / 2);
                 var pathY = path[soldier.pointer][1] * tileHeight + (tileHeight / 2);
 
-                console.log(soldier.speed);
                 soldier.rotation = game.physics.arcade.moveToXY(soldier, pathX, pathY, soldier.speed);
 
 
@@ -299,14 +303,18 @@ function moveSoldiers() {
 function goalReached(soldier) {
 
     function setHealthBar(targetPlayer) {
+
         if (targetPlayer.healthBar.height >= 50) {
             targetPlayer.healthBar.height -= 50;
             targetPlayer.healthBar.y += 50;
 
             targetPlayer.health -= 50;
 
-            targetPlayer.funds += 200;
-            scoreText.text = "Funds: " + targetPlayer.funds + " Cts";
+            if(targetPlayer !== player) {
+                targetPlayer.funds += 200;
+                scoreText.text = "Funds: " + targetPlayer.funds + " Cts";
+            }
+
         }
         if (soldier.team !== player.team && player.health <= 0) {
             getAjax("https://webgamesdev-blaircalderwood.c9.io/playerDead?name=" + playerName, playerDead);
@@ -333,12 +341,14 @@ function playerDead(data) {
 
 function gameOver(text) {
 
+    var gameOverMessage = $("#gameOverMessage");
     console.log(text);
     clearInterval(serverTimer);
     clearInterval(scoreTimer);
 
     serverBackground = game.add.sprite(0, 0, 'serverBackground');
-    $("#gameOverMessage").show();
+    gameOverMessage.show();
+
     $("#gameOverText").html("<b>" + text + "</b>");
 
     game.paused = true;
