@@ -1,4 +1,32 @@
-var tiles, player, enemy = {}, tileWidth, tileHeight, scoreText, scoreTimer, serverTimer, game, barBackground, barBackground2, healthBarBlue, healthBarRed;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: mainCode.js</title>
+
+    <script src="../scripts/prettify/prettify.js"> </script>
+    <script src="../scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="../styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="../styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: mainCode.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var tiles, player, enemy = {}, tileWidth, tileHeight, scoreText, scoreTimer, serverTimer, game, barBackground, barBackground2, healthBarBlue, healthBarRed;
 var starterMenu, instrPage, instrButtonGroup, instrPageOpenBool, buttonGroup, serverBackground, gameCanvas;
 var red = {}, blue = {};
 
@@ -42,7 +70,7 @@ function preload() {
 
     game.stage.disableVisibilityChange = true;
 
-    for (var i = 0; i < tileImages.length; i++) game.load.image(tileImages[i].key, tileImages[i].src);
+    for (var i = 0; i &lt; tileImages.length; i++) game.load.image(tileImages[i].key, tileImages[i].src);
 
     game.load.spritesheet('player', 'assets/turnipStripBlue.png', 35, 25);
     game.load.spritesheet('player2', 'assets/turnipStripRed.png', 35, 25);
@@ -267,13 +295,13 @@ function updateListener(update) {
 
         var team = JSON.parse(update);
 
-        for (var i = 0; i < team.length; i++) {
+        for (var i = 0; i &lt; team.length; i++) {
 
             //If the enemy has been defeated inform the player that they have won.
-            if (team[i] == "Blue Dead" && player.team !== "blue")gameOver("The enemy is dead. You have won!");
+            if (team[i] == "Blue Dead" &amp;&amp; player.team !== "blue")gameOver("The enemy is dead. You have won!");
 
             //If the player has been defeated inform the player that they have lost.
-            else if (team[i] == "Red Dead" && player.team !== "red")gameOver("The enemy is dead. You have won!");
+            else if (team[i] == "Red Dead" &amp;&amp; player.team !== "red")gameOver("The enemy is dead. You have won!");
 
             //Spawn any newly placed soldiers
             else if (team[i].type == "soldier") {
@@ -349,11 +377,11 @@ function moveSoldiers() {
 
 
                 //Move onto the next section of the path is the end of the current section has been reached
-                if (Math.round(soldier.x) == pathX && Math.round(soldier.y) == pathY) {
+                if (Math.round(soldier.x) == pathX &amp;&amp; Math.round(soldier.y) == pathY) {
 
                     //Move diagonally if both the x and y axis of the path coordinates two places ahead in the list are different
                     if (path[soldier.pointer + 2]) {
-                        if (path[soldier.pointer][0] !== path[soldier.pointer + 2][0] && path[soldier.pointer][1] !== path[soldier.pointer + 2][1]) {
+                        if (path[soldier.pointer][0] !== path[soldier.pointer + 2][0] &amp;&amp; path[soldier.pointer][1] !== path[soldier.pointer + 2][1]) {
                             soldier.pointer++;
                         }
                     }
@@ -403,7 +431,7 @@ function goalReached(soldier) {
         }
 
         //Inform server that the player is dead if their health has reached zero
-        if (soldier.team !== player.team && player.health <= 0) {
+        if (soldier.team !== player.team &amp;&amp; player.health &lt;= 0) {
             getAjax("https://webgamesdev-blaircalderwood.c9.io/playerDead?name=" + playerName, playerDead);
         }
     }
@@ -449,7 +477,7 @@ function gameOver(text) {
     serverBackground = game.add.sprite(0, 0, 'serverBackground');
     gameOverMessage.show();
 
-    $("#gameOverText").html("<b>" + text + "</b>");
+    $("#gameOverText").html("&lt;b>" + text + "&lt;/b>");
 
     //Ensure the game is not running in the background when the game over screen if showing
     game.paused = true;
@@ -481,7 +509,7 @@ function moveTurrets() {
             forEachTurret(function (turret) {
 
                 if (turret.alive) {
-                    if (game.physics.arcade.distanceBetween(turret, soldier) < 250 && turret.team !== soldier.team) {
+                    if (game.physics.arcade.distanceBetween(turret, soldier) &lt; 250 &amp;&amp; turret.team !== soldier.team) {
                         rotate(turret, soldier);
 
                     }
@@ -505,7 +533,7 @@ function moveTurrets() {
 fireBullet = function (turret, target, angle) {
 
     //Check that the fire rate has not been exceeded
-    if (game.time.now > turret.nextFire && turret.bullets.countDead() > 0) {
+    if (game.time.now > turret.nextFire &amp;&amp; turret.bullets.countDead() > 0) {
 
         turret.nextFire = game.time.now + turret.fireRate;
 
@@ -538,7 +566,7 @@ rotate = function (turret, target) {
 
     var totalRotation = game.physics.arcade.angleBetween(turret, target) - turret.rotation;
 
-    if (totalRotation <= -turret.speed)turret.rotation -= turret.speed;
+    if (totalRotation &lt;= -turret.speed)turret.rotation -= turret.speed;
     else if (totalRotation >= turret.speed)turret.rotation += turret.speed;
 
     fireBullet(turret, target, turret.rotation);
@@ -558,8 +586,8 @@ function createMap() {
     tileHeight = game.height / gridCoords[0].length;
 
     //Loop through all tiles in tile map and place relevant tile on screen
-    for (var i = 0; i < gridCoords.length; i++) {
-        for (var j = 0; j < gridCoords[0].length; j++) {
+    for (var i = 0; i &lt; gridCoords.length; i++) {
+        for (var j = 0; j &lt; gridCoords[0].length; j++) {
 
             switch (gridCoords[i][j]) {
 
@@ -641,7 +669,7 @@ function createFundsText() {
  */
 
 function isInOwnHalf(xCoord) {
-    return ((xCoord < (game.width / 2) && player.team == "blue") || (xCoord > (game.width / 2) && player.team == "red"))
+    return ((xCoord &lt; (game.width / 2) &amp;&amp; player.team == "blue") || (xCoord > (game.width / 2) &amp;&amp; player.team == "red"))
 }
 
 /** Create a new soldier and send the data to the server.
@@ -659,7 +687,7 @@ function newSoldier(listener, pointer) {
 
         //If the tile was clicked in own half send new soldier data to the server. It will get inserted into game on next call of updateListener function.
         if (isInOwnHalf(targetTile.x)) {
-            getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?name=" + playerName + "&team=" + player.team + "&type=soldier&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y), itemPlaced);
+            getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?name=" + playerName + "&amp;team=" + player.team + "&amp;type=soldier&amp;x=" + JSON.stringify(targetTile.x) + "&amp;y=" + JSON.stringify(targetTile.y), itemPlaced);
         }
 
         //Remove funds from player
@@ -685,7 +713,7 @@ function newTurret(listener, pointer) {
 
         //If the tile was clicked in own half send new turret data to the server. It will get inserted into game on next call of updateListener function.
         if (isInOwnHalf(targetTile.x)) {
-            getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?name=" + playerName + "&team=" + player.team + "&type=turret&x=" + JSON.stringify(targetTile.x) + "&y=" + JSON.stringify(targetTile.y), itemPlaced);
+            getAjax("https://webgamesdev-blaircalderwood.c9.io/placeNew?name=" + playerName + "&amp;team=" + player.team + "&amp;type=turret&amp;x=" + JSON.stringify(targetTile.x) + "&amp;y=" + JSON.stringify(targetTile.y), itemPlaced);
         }
 
         //Remove funds from player
@@ -852,3 +880,26 @@ function backAction() {
     game.world.sendToBack(instrButtonGroup);
 
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="../menuHandling/index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#backAction">backAction</a></li><li><a href="global.html#collisionHandler">collisionHandler</a></li><li><a href="global.html#createButtons">createButtons</a></li><li><a href="global.html#createFundsText">createFundsText</a></li><li><a href="global.html#createHealthBars">createHealthBars</a></li><li><a href="global.html#createMap">createMap</a></li><li><a href="global.html#fireBullet">fireBullet</a></li><li><a href="global.html#forEachSoldier">forEachSoldier</a></li><li><a href="global.html#forEachTurret">forEachTurret</a></li><li><a href="global.html#gameOver">gameOver</a></li><li><a href="global.html#getAjax">getAjax</a></li><li><a href="global.html#getTargetTile">getTargetTile</a></li><li><a href="global.html#goalReached">goalReached</a></li><li><a href="global.html#gridCoords">gridCoords</a></li><li><a href="global.html#instrAction">instrAction</a></li><li><a href="global.html#isInOwnHalf">isInOwnHalf</a></li><li><a href="global.html#itemPlaced">itemPlaced</a></li><li><a href="global.html#loadGame">loadGame</a></li><li><a href="global.html#moveSoldiers">moveSoldiers</a></li><li><a href="global.html#moveTurrets">moveTurrets</a></li><li><a href="global.html#newSoldier">newSoldier</a></li><li><a href="global.html#newTurret">newTurret</a></li><li><a href="global.html#playerDead">playerDead</a></li><li><a href="global.html#playPressed">playPressed</a></li><li><a href="global.html#preload">preload</a></li><li><a href="global.html#removeGroup">removeGroup</a></li><li><a href="global.html#rotate">rotate</a></li><li><a href="global.html#setPlayerTeams">setPlayerTeams</a></li><li><a href="global.html#showMenuButtons">showMenuButtons</a></li><li><a href="global.html#showServerScreen">showServerScreen</a></li><li><a href="global.html#spawnPlayerOnObject">spawnPlayerOnObject</a></li><li><a href="global.html#spawnTurretOnObject">spawnTurretOnObject</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#startTimer">startTimer</a></li><li><a href="global.html#tileImages">tileImages</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#updateListener">updateListener</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-beta3</a> on Fri May 01 2015 19:04:27 GMT+0100 (GMT Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="../scripts/linenumber.js"> </script>
+</body>
+</html>
