@@ -1,6 +1,14 @@
 
 
-//TO DO: Insert tutorial link
+//Inspiration taken from aStar tutorial at http://buildnewgames.com/astar/
+
+/**Find the most efficient path using the A* algorithm
+ *
+ * @param pathStart - The coordinates of the start of the path
+ * @param pathEnd - The coordinates of the end of the path
+ * @returns {*} - An array containing coordinates of the most efficient path to take
+ */
+
 findPath = function (pathStart, pathEnd) {
 
     var pow = Math.pow;
@@ -12,9 +20,23 @@ findPath = function (pathStart, pathEnd) {
     var worldHeight = gridCoords[0].length;
     var worldSize = worldWidth * worldHeight;
 
+    /** Find the distance 'as the crow flies' between two points
+     *
+     * @param point - First point used to calculate the distance
+     * @param target - Second point used to calculate the distance
+     * @returns {number} - The euclidean distance between the two given points
+     */
+
     function euclideanDistance(point, target) {
         return sqrt(pow(point.x - target.x, 2) + pow(point.y - target.y, 2));
     }
+
+    /** Check the neighbouring space of a given set of coordinates to see if they can be travelled upon i.e. they do not contain impassable obstacles
+     *
+     * @param x - X coordinate to check neighbours of
+     * @param y - Y coordinate to check neighbours of
+     * @returns {Array} - An array of all coordinates next to the given target that do not contain obstacles
+     */
 
     function neighbours(x, y) {
 
@@ -48,6 +70,13 @@ findPath = function (pathStart, pathEnd) {
 
     }
 
+    /** Check if given coordinates contain obstacles
+     *
+     * @param x - X coordinate to check
+     * @param y - Y coordinate to check
+     * @returns {boolean} - Returns true if the given coordinates contain no obstacles
+     */
+
     function canWalkHere(x, y) {
 
         return ((gridCoords[x] != null) &&
@@ -55,6 +84,14 @@ findPath = function (pathStart, pathEnd) {
             (gridCoords[x][y] <= maxWalkableTileNo));
 
     }
+
+    /** Set up node object for future path calculation
+     *
+     * @param parent - The node that was checked immediately prior to the current node
+     * @param point - The coordinates of the current node
+     * @returns {{parent: *, value: *, x: *, y: *, f: number, g: number}} - Node object
+     * @constructor
+     */
 
     function Node(parent, point) {
 
@@ -70,6 +107,11 @@ findPath = function (pathStart, pathEnd) {
         };
 
     }
+
+    /** Calculate the path using the A* algorithm
+     *
+     * @returns {Array} - Array of path coordinates
+     */
 
     function calculatePath() {
 
