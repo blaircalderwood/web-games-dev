@@ -553,7 +553,7 @@ function createMap() {
 
     game.add.tileSprite(0, 0, game.width, game.height, "canWalkTile");
 
-    var tileName, inputEnabled, listenerFunction;
+    var tileName, listenerFunction = "";
     tileWidth = game.width / gridCoords.length;
     tileHeight = game.height / gridCoords[0].length;
 
@@ -567,7 +567,6 @@ function createMap() {
                     tileName = "canWalkTile";
 
                     //Create new soldier if tile is clicked.
-                    inputEnabled = true;
                     listenerFunction = newSoldier;
                     break;
 
@@ -575,29 +574,28 @@ function createMap() {
                     tileName = "noWalkTile";
 
                     //Create new turret if tile is clicked.
-                    inputEnabled = true;
                     listenerFunction = newTurret;
                     break;
 
                 case 2:
                     tileName = "neutralTile";
-                    inputEnabled = false;
                     //Change to 0 for simpler path finding
                     gridCoords[i][j] = 0;
                     break;
 
                 case 3:
                     tileName = "blueTile";
-                    inputEnabled = false;
                     //Change to 0 for simpler path finding
                     gridCoords[i][j] = 0;
                     break;
 
                 case 4:
                     tileName = "redTile";
-                    inputEnabled = false;
                     //Change to 0 for simpler path finding
                     gridCoords[i][j] = 0;
+                    break;
+
+                default:
                     break;
 
             }
@@ -606,10 +604,14 @@ function createMap() {
             var newTile = game.add.sprite(tileWidth * i, tileHeight * j, tileName);
             newTile.width = tileWidth;
             newTile.height = tileHeight;
-            newTile.inputEnabled = inputEnabled;
 
             //Listen for mouse clicks on relevant tiles
-            if (inputEnabled == true) newTile.events.onInputDown.add(listenerFunction, this);
+            if (listenerFunction !== "") {
+
+                newTile.inputEnabled = true;
+                newTile.events.onInputDown.add(listenerFunction, this);
+
+            }
 
         }
     }
@@ -651,6 +653,8 @@ function isInOwnHalf(xCoord) {
  */
 function newSoldier(listener, pointer) {
 
+    if(!listener || !pointer)return;
+
     //Check that the player has enough funds to place a new soldier
     if (player.funds >= 50) {
 
@@ -676,6 +680,8 @@ function newSoldier(listener, pointer) {
  * @param pointer - Mouse object.
  */
 function newTurret(listener, pointer) {
+
+    if(!listener || !pointer)return;
 
     //Check that the player has enough funds to place a new turret
     if (player.funds >= 700) {
