@@ -1,5 +1,9 @@
 # web-games-dev
 
+The link below contains all of the source code and documentation produced for this game:
+
+blaircalderwood.github.io/web-games-dev/API
+
 Turnip Wars is an online two player top down 2D tower defence game. The main idea of the game is to manage your funds to purchase turrets or turnips and try to destroy the enemies’ base while keeping yours safe. 
 
 The turnips will spawn wherever the player has pressed in their half of the environment. They will then navigate their way to the enemies’ base using the A* path-finding algorithm where they will take health away from the opposing player. 
