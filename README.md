@@ -22,7 +22,7 @@ The players will have to manage their funds smartly and select their turret posi
 
 ●	Every two seconds twenty credits will be added to the players funds (Keeps flow of the game moving)
 
-●	Turrets cost 300 credits
+●	Turrets cost 700 credits
 
 ●	Turnips cost 50 credits
 
