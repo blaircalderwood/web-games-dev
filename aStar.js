@@ -2,13 +2,14 @@
 
 //Inspiration taken from aStar tutorial at http://buildnewgames.com/astar/
 
-/**Find the most efficient path using the A* algorithm
- *
- * @param pathStart - The coordinates of the start of the path
- * @param pathEnd - The coordinates of the end of the path
- * @returns {*} - An array containing coordinates of the most efficient path to take
+/*Find the most efficient path using the A* algorithm
+ pathStart - The coordinates of the start of the path
+ pathEnd - The coordinates of the end of the path
+ @returns {*} - An array containing coordinates of the most efficient path to take
  */
 
+//Find path method
+//Initialise the open and closed lists. The start node is added to the open list which starts the process.
 findPath = function (pathStart, pathEnd) {
 
     var pow = Math.pow;
@@ -20,22 +21,21 @@ findPath = function (pathStart, pathEnd) {
     var worldHeight = gridCoords[0].length;
     var worldSize = worldWidth * worldHeight;
 
-    /** Find the distance 'as the crow flies' between two points
-     *
-     * @param point - First point used to calculate the distance
-     * @param target - Second point used to calculate the distance
-     * @returns {number} - The euclidean distance between the two given points
+    /* Find the distance between two points
+     point - First point used to calculate the distance
+     target - Second point used to calculate the distance
      */
 
+    //Heuristic function using the Euclidean distance formula
     function euclideanDistance(point, target) {
-        return sqrt(pow(point.x - target.x, 2) + pow(point.y - target.y, 2));
+        return sqrt(pow(point.x - target.x, 2) + pow(point.y - target.y, 2)); //This is the Euclidean distance formula and is used to calculate the cost between two nodes
     }
 
-    /** Check the neighbouring space of a given set of coordinates to see if they can be travelled upon i.e. they do not contain impassable obstacles
-     *
-     * @param x - X coordinate to check neighbours of
-     * @param y - Y coordinate to check neighbours of
-     * @returns {Array} - An array of all coordinates next to the given target that do not contain obstacles
+    /*Check the neighbouring space of a given set of coordinates to see if they can be travelled upon i.e. they do not contain impassable obstacles
+
+     x - X coordinate to check neighbours of.
+     y - Y coordinate to check neighbours of.
+     {Array} - An array of all coordinates next to the given target that do not contain obstacles
      */
 
     function neighbours(x, y) {
@@ -70,11 +70,11 @@ findPath = function (pathStart, pathEnd) {
 
     }
 
-    /** Check if given coordinates contain obstacles
-     *
-     * @param x - X coordinate to check
-     * @param y - Y coordinate to check
-     * @returns {boolean} - Returns true if the given coordinates contain no obstacles
+    /* Check if given coordinates contain obstacles
+
+      x - X coordinate to check
+      y - Y coordinate to check
+      {boolean} - Returns true if the given coordinates contain no obstacles
      */
 
     function canWalkHere(x, y) {
@@ -85,12 +85,11 @@ findPath = function (pathStart, pathEnd) {
 
     }
 
-    /** Set up node object for future path calculation
-     *
-     * @param parent - The node that was checked immediately prior to the current node
-     * @param point - The coordinates of the current node
-     * @returns {{parent: *, value: *, x: *, y: *, f: number, g: number}} - Node object
-     * @constructor
+    /*Set up node object for future path calculation
+
+     parent - The node that has all of its neighbours checked
+     point - The coordinates of the current node
+     {{parent: *, value: *, x: *, y: *, f: number, g: number}} - Node object
      */
 
     function Node(parent, point) {
@@ -108,26 +107,25 @@ findPath = function (pathStart, pathEnd) {
 
     }
 
-    /** Calculate the path using the A* algorithm
-     *
-     * @returns {Array} - Array of path coordinates
+    /* Calculate the path using the A* algorithm
+     {Array} - Array of path coordinates
      */
 
     function calculatePath() {
 
-        var myPathStart = Node(null, {x: pathStart[0], y: pathStart[1]});
-        var myPathEnd = Node(null, {x: pathEnd[0], y: pathEnd[1]});
+        var myPathStart = Node(null, {x: pathStart[0], y: pathStart[1]});   //position of first node
+        var myPathEnd = Node(null, {x: pathEnd[0], y: pathEnd[1]});   //position of end node
 
         var aStar = new Array(worldSize);
 
-        var open = [myPathStart];
-        var closed = [];
+        var open = [myPathStart]; //Initialise open list
+        var closed = [];  //Initialise closed list
         var result = [];
 
         var myNeighbours, myNode, myPath;
         var length, max, min, i, j;
 
-        while (length = open.length) {
+        while (length = open.length) {   //While a path is being calculated
 
             max = worldSize;
             min = -1;
@@ -145,7 +143,7 @@ findPath = function (pathStart, pathEnd) {
 
             if (myNode.value == myPathEnd.value) {
 
-                myPath = closed[closed.push(myNode) - 1];
+                myPath = closed[closed.push(myNode) - 1];  //push a parent to the closed list
 
                 do {
 
@@ -154,9 +152,9 @@ findPath = function (pathStart, pathEnd) {
                 }
                 while (myPath = myPath.parent);
 
-                aStar = closed = open = [];
+                aStar = closed = open = []; //Make all the arrays empty
 
-                result.reverse();
+                result.reverse();   //Reverse the the order of the closed list containing all of the parent nodes so that the lowest cost parent node is the first node in the path
 
             }
 
@@ -164,7 +162,7 @@ findPath = function (pathStart, pathEnd) {
 
                 myNeighbours = neighbours(myNode.x, myNode.y);
 
-                for (i = 0, j = myNeighbours.length; i < j; i++) {
+                for (i = 0, j = myNeighbours.length; i < j; i++) {   //Check through myNeighbour array
 
                     myPath = Node(myNode, myNeighbours[i]);
 
@@ -173,13 +171,13 @@ findPath = function (pathStart, pathEnd) {
                         myPath.g = myNode.g + euclideanDistance(myNeighbours[i], myNode);
                         myPath.f = myPath.g + euclideanDistance(myNeighbours[i], myPathEnd);
 
-                        open.push(myPath);
+                        open.push(myPath);    //Add neighbour to open list
 
                         aStar[myPath.value] = true;
                     }
                 }
 
-                closed.push(myNode);
+                closed.push(myNode);  //Add parent to closed list
 
             }
         }
@@ -188,6 +186,6 @@ findPath = function (pathStart, pathEnd) {
 
     }
 
-    return calculatePath();
+    return calculatePath(); //return the final calculated path
 
 };

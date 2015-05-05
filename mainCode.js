@@ -131,6 +131,7 @@ function setPlayerTeams(playerTeam) {
 
     red.soldierPool = new SoldierPool("red");
     blue.soldierPool = new SoldierPool("blue");
+
     red.turretPool = new TurretPool("red");
     blue.turretPool = new TurretPool("blue");
 
