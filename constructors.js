@@ -100,7 +100,12 @@ var Turret = function (team, x, y) {
 
     if (team == "blue") newTurret = blue.turretPool.getFirstExists(false);
 
-    else newTurret = red.turretPool.getFirstExists(false);
+    else {
+
+        newTurret = red.turretPool.getFirstExists(false);
+        newTurret.rotation = Math.PI;
+
+    }
 
     //Set position of turret to clicked tile
     newTurret.reset(x, y);
